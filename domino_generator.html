@@ -1,0 +1,117 @@
+<html>
+<head>
+<style>
+
+.tile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 128px;
+  height: 128px;
+  image-rendering: pixelated;
+  background-size: 128px 128px;
+}
+
+.ht {
+  position: absolute;
+  width: 48px;
+  height: 128px;
+  image-rendering: pixelated;
+  background-size: 48px 128px;
+}
+
+.vt {
+  position: absolute;
+  width: 128px;
+  height: 48px;
+  image-rendering: pixelated;
+  background-size: 128px 48px;
+}
+
+</style>
+<script>
+
+var first_tops = [0, 0, 0, 128];
+var first_lefts = [0, 0, 128, 0];
+var second_tops = [0, 128, 0, 0];
+var second_lefts = [128, 0, 0, 0];
+
+function tile_code(arr) {
+  var str = 'tile';
+  for (var i = 0; i < 4; ++i) {
+    str += '_' + arr[i];
+  }
+  return str;
+}
+
+function get_node(ulaz, gore, desno, dolje, rot) {
+  if (ulaz != gore + desno + dolje) {
+    if (gore != 0 || dolje != 0 || desno == 0) {
+      return '<b>Invalid domino!</b>';
+    }
+  }
+  var first = [ulaz, 0, ulaz, 0];
+  var second = [ulaz, gore, desno, dolje];
+  if (gore == 0 && dolje == 0) {
+    second = [desno, 0, desno, 0];
+  }
+
+  for (var i = 0; i < rot; ++i) {
+    first.push(first.shift());
+    second.unshift(second.pop());
+  }
+
+  var first_top = first_tops[rot];
+  var first_left = first_lefts[rot];
+  var second_top = second_tops[rot];
+  var second_left = second_lefts[rot];
+  console.log(first_top);
+
+  var first_tile_code = tile_code(first);
+  var second_tile_code = tile_code(second);
+  var node = '';
+
+  node += `<div class="tile" style="background-image: url(assets/tiles/${first_tile_code}.png); top: ${first_top}px; left: ${first_left}px"></div>`;
+  node += `<div class="tile" style="background-image: url(assets/tiles/${second_tile_code}.png); top: ${second_top}px; left: ${second_left}px"></div>`;
+
+  if (gore == 0 && dolje == 0 && ulaz != desno) {
+    var trans_arr = [ulaz, desno];
+    if (rot >= 2) trans_arr.push(trans_arr.shift());
+    if (rot % 2 == 0) {
+      var asset = `assets/tiles/transition_${trans_arr[0]}_${trans_arr[1]}.png`;
+      node += `<div class="ht" style="background-image: url(${asset}); top: 0; left: 104px;"></div>`;
+    } else {
+      var asset = `assets/tiles/transition_vert_${trans_arr[0]}_${trans_arr[1]}.png`;
+      node += `<div class="vt" style="background-image: url(${asset}); top: 104px; left: 0;"></div>`;
+    }
+  }
+
+  return node;
+}
+
+function gen() {
+  const ulaz = document.controls.ulaz.value - 0;
+  const gore = document.controls.gore.value - 0;
+  const desno = document.controls.desno.value - 0;
+  const dolje = document.controls.dolje.value - 0;
+  const rot = document.controls.rotacija.value - 0;
+  document.getElementById('domino').innerHTML = get_node(ulaz, gore, desno, dolje, rot);
+}
+
+</script>
+</head>
+<body>
+  <div id="controls">
+    <form name="controls">
+      <p>Ulaznih: <input type="number"name="ulaz" value="1" min="1" max="3" onchange="gen()"></p>
+      <p>Izlaz gore: <input type="number" name="gore" value="0" min="0" max="3" onchange="gen()"></p>
+      <p>Izlaz desno: <input type="number" name="desno" value="0" min="0" max="3" onchange="gen()"></p>
+      <p>Izlaz dolje: <input type="number" name="dolje" value="0" min="0" max="3" onchange="gen()"></p>
+      <p>rotacija: <input type="number" name="rotacija" value="0" min="0" max="3" onchange="gen()"></p>
+    </form>
+  </div>
+  <div id="domino" style="position: relative;">
+    domino...
+  </div>
+</body>
+</html>
