@@ -1,0 +1,25 @@
+:host {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 252px;
+  overflow: hidden;
+  outline: 4px solid #2a3356;
+}
+
+.boo {
+  overflow-y: auto;
+  height: 100%;
+}
+
+.boo domino {
+  margin-left: 20px;
+
+  &.active {
+    outline: 4px solid #fff;
+  }
+  &:hover {
+    outline: 4px solid #4a5386;
+  }
+}

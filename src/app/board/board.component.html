@@ -1,0 +1,22 @@
+<div class="board-wrapper" (mousemove)="onMouseMove($event)" (wheel)="onScroll($event)" (click)="onClick()">
+  <div #boardRef class="board">
+    <!-- Outline of placed dominoes (style purposes) -->
+    <div class="domino-outline" [ngStyle]="domino.style" *ngFor="let domino of dominos"
+        [ngClass]="{'vertical': domino.orientation == 'VERTICAL'}">
+    </div>
+    
+    <!-- All fixed dominoes -->
+    <domino *ngFor="let domino of dominos"
+            [domino]="domino"
+            style="position: absolute;"
+            [ngStyle]="domino.style">
+    </domino>
+
+    <!-- Domino placeholder -->
+    <domino class="placeholder"
+            [ngClass]="{'placeable': placeable}"
+            [domino]="placeholder.domino"
+            [ngStyle]="placeholder.style">
+    </domino>    
+  </div>
+</div>

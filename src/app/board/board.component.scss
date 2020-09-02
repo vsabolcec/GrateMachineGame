@@ -1,0 +1,42 @@
+.board-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -238px;
+  margin-left: -238px;
+  width: 476px;  // 10 + 7 * 96 + 10
+  height: 476px;
+  background-image: url('../../assets/board.png');
+  background-size: 476px 476px;
+  image-rendering: pixelated;
+}
+
+.board {
+  position: relative;
+  margin: 14px;
+  width: 448px;
+  height: 672px;
+}
+
+.placeholder {
+  position: absolute;
+  outline: 2px solid red;
+  opacity: 0.35;
+
+  &.placeable {
+    outline: 2px solid green;
+    opacity: 0.6;
+  }
+}
+
+.domino-outline {
+  position: absolute;
+  outline: 4px solid #7a83bf;
+  width: 128px;
+  height: 64px;
+
+  &.vertical {
+    width: 64px;
+    height: 128px;
+  }
+}
