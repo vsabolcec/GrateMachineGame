@@ -9,8 +9,9 @@ import { SoundService } from '../sound.service';
 })
 export class StartMenuComponent {
 
-  constructor(private readonly statesService: StatesService, private readonly soundService: SoundService) {
-    soundService.add('button_click', new Audio("../../assets/sound/button_click.wav"));
+  constructor(private readonly statesService: StatesService,
+              private readonly soundService: SoundService) {
+    soundService.set('button_click', new Audio("../../assets/sound/button_click.wav"));
   }
 
   startGame() {

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { StatesService, State } from '../states.service';
 import { SoundService } from '../sound.service';
 import { MusicService } from '../music.service';

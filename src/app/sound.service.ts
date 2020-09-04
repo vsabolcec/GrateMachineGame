@@ -16,13 +16,11 @@ export class SoundService {
     }
   }
 
-  public add(key: string, value: HTMLAudioElement) {
-    if(!this.soundMap_[key]) {
-      this.soundMap_[key] = value;
-    }
+  public set(key: string, value: HTMLAudioElement) {
+    this.soundMap_[key] = value;
   }
 
-  public play(key: string) {
+  public play(key: string): void {
     if(!this.soundMap_[key])
       return;
     this.soundMap_[key].volume = this.volume / 100;
@@ -34,7 +32,7 @@ export class SoundService {
     }
   }
 
-  public get volume() {
+  public get volume(): number {
     return this.volume_;
   }
 
@@ -43,7 +41,7 @@ export class SoundService {
     this.volume_ = newVolume;
   }
 
-  public resetVolume() {
+  public resetVolume(): void {
     this.volume = 100;
   }
 

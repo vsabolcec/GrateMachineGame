@@ -16,7 +16,7 @@ export class MusicService {
     }
   }
 
-  public get music() {
+  public get music(): HTMLAudioElement {
     return this.music_;
   }
 
@@ -25,7 +25,7 @@ export class MusicService {
     this.music.loop = true;
   }
 
-  public play() {
+  public play(): void {
     var promise = this.music.play();
     if (promise !== undefined) {
         promise.catch(error => {
@@ -34,7 +34,7 @@ export class MusicService {
     }
   }
 
-  public get volume() {
+  public get volume(): number {
     return this.volume_;
   }
 
@@ -45,7 +45,7 @@ export class MusicService {
       this.music.volume = this.volume;
   }
 
-  public resetVolume() {
+  public resetVolume(): void {
     this.volume = 100;
   }
 
