@@ -1,22 +1,31 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { Domino, TileType, Orientation, rotateDomino } from '../domino/domino.component';
+import { Component, ElementRef, ViewChild, Input } from '@angular/core';
 import { InventoryService } from '../inventory.service';
-import { Board, BOARD_SIZE, BLOCK_SIZE, PlacedDomino } from './board';
+import { Board } from './board';
+import { Tile, TileType } from '../tile/tile.component';
+import { deepCopy } from '../utils';
+
+const BLOCK_SIZE: number = 64;
 
 interface Placeholder {
-  domino: Domino,
+  tile: Tile,
   boardX: number,
   boardY: number,
   style: {
-    display: 'none' | 'inline-block',
+    display: 'none'|'block',
     left: string,
     top: string
-  }
+  },
+  placeable: boolean
 }
 
 interface Position {
   x: number,
   y: number
+}
+
+interface PlacedTile {
+  tile: Tile,
+  style: { left: string, top: string }
 }
 
 @Component({
@@ -26,48 +35,57 @@ interface Position {
 })
 export class BoardComponent {
   @ViewChild('boardRef') boardRef: ElementRef;
+  @ViewChild('bbb') bbb:ElementRef;
+  @Input() width: number;
+  @Input() height: number;
 
-  // Initial placeholder...
-  placeholder: Placeholder = {
-    domino: {
-      tiles: [
-        { type: TileType.PIPES, layout: [1, 0, 1, 0] },
-        { type: TileType.PIPES, layout: [3, 0, 3, 0] }
-      ],
-      orientation: Orientation.HORIZONTAL
-    },
-    boardX: 0,
-    boardY: 0,
-    style: {
-      display: 'none',
-      left: '0',
-      top: '0'
-    }
-  };
+  // styles...
+  boardOuterStyle: {};
+  boardOverflowStyle: {};
+  boardStyle: {};
 
   // Board management
-  private board: Board = new Board();
+  private board: Board;
 
-  // Getter for placed dominos from board object
-  get dominos(): Array<PlacedDomino> {
-    return this.board.dominos;
-  }
+  placeholder?: Placeholder = undefined;
 
-  // Can placeholder be placed
-  // TODO: move to placeholder interface?
-  placeable: boolean = false;
+  placedTiles: PlacedTile[] = [];
 
   // Last mouse position
   private mouseBoardPos: { x: number, y: number };
 
-  constructor(private readonly inventoryService: InventoryService) {
-    // Observe inventory changes to update placeholder
-    this.inventoryService.observer.subscribe((domino: Domino) => {
-      this.placeholder.domino = { ...domino };
-      console.log(this.placeholder);
-    });
-  }
+  // In the number of tiles
+  private boardOffset: number = 0;
 
+  constructor(private readonly inventoryService: InventoryService) {}
+
+  ngOnInit() {
+    this.board = new Board(this.width, this.height);
+    this.inventoryService.observer.subscribe((tile: Tile) => {
+      this.placeholder = {
+        tile: deepCopy(tile),
+        boardX: 0,
+        boardY: 0,
+        style: { display: 'none', left: '0', top: '0' },
+        placeable: false
+      };
+    });
+
+    // set styles...
+    const outerWidth = this.width * BLOCK_SIZE + 14;
+    const outerHeight = this.height * BLOCK_SIZE + 14;
+    this.boardOuterStyle = {
+      width: `${outerWidth}px`,
+      height: `${outerHeight}px`,
+      marginLeft: `${-outerWidth / 2}px`,
+      marginTop: `${-outerHeight / 2}px`
+    };
+    this.boardOverflowStyle = {
+      width: `${this.width * BLOCK_SIZE}px`,
+      height: `${this.height * BLOCK_SIZE}px`,
+    };
+    this.boardStyle = { height: `${this.height * BLOCK_SIZE}px` };
+  }
 
   onMouseMove(event: MouseEvent): void {
     const boardOffset = this.boardRef.nativeElement.getBoundingClientRect();
@@ -75,69 +93,75 @@ export class BoardComponent {
       x: event.clientX - boardOffset.left,
       y: event.clientY - boardOffset.top
     };
-    this.updatePlaceholder();
+    if (this.placeholder) {  
+      this.updatePlaceholder();
+    }
   }
 
-  onScroll(e: WheelEvent): void {
-    if (e.deltaY > 0) {
-      // Rotate clockwise
-      this.placeholder.domino = rotateDomino(this.placeholder.domino);
-    } else {
-      // Rotate counter-clocwise (3 times clockwise)
-      this.placeholder.domino = rotateDomino(this.placeholder.domino);
-      this.placeholder.domino = rotateDomino(this.placeholder.domino);
-      this.placeholder.domino = rotateDomino(this.placeholder.domino);
+  onScroll(event: WheelEvent): void {
+    if (this.placeholder) {
+      if (event.deltaY < 0) {
+        this.placeholder.tile = rotateTile(this.placeholder.tile);
+      } else {
+        this.placeholder.tile = rotateTile(this.placeholder.tile);
+        this.placeholder.tile = rotateTile(this.placeholder.tile);
+        this.placeholder.tile = rotateTile(this.placeholder.tile);
+      }
+      this.updatePlaceholder();
     }
-    this.updatePlaceholder();
   }
 
   onClick() {
-    // If there is a placeholder and it is placeable.
-    if (this.placeholder.style.display != 'none' && this.placeable) {
-      this.board.addDomino(this.placeholder.domino, this.placeholder.boardX,
-                           this.placeholder.boardY);
+    if (this.placeholder !== undefined && this.placeholder.placeable) {
+      this.board.placeTile(this.placeholder.tile, this.placeholder.boardX, this.placeholder.boardY);
+      this.placedTiles.push({
+        tile: deepCopy(this.placeholder.tile),
+        style: {
+          left: `${this.placeholder.boardX * BLOCK_SIZE}px`,
+          top: `${this.placeholder.boardY * BLOCK_SIZE}px`
+        }
+      });
+      console.log(this.placedTiles);
     }
   }
 
   private updatePlaceholder(): void {
-    const boardPos = boardTransform(this.mouseBoardPos, this.placeholder);
+    const boardPos = this.boardPosition(this.mouseBoardPos);
     if (boardPos === undefined) {
-      this.placeable = false;
       this.placeholder.style.display = 'none';
+      this.placeholder.placeable = false;
       return;
     }
-
-    this.placeholder.style.display = 'inline-block';
-    this.placeholder.style.left = `${boardPos.x * BLOCK_SIZE}px`;
-    this.placeholder.style.top = `${boardPos.y * BLOCK_SIZE}px`;
     this.placeholder.boardX = boardPos.x;
     this.placeholder.boardY = boardPos.y;
-    this.placeable = this.board.canPlaceDomino(this.placeholder.domino,
-                                               this.placeholder.boardX,
-                                               this.placeholder.boardY);
+    this.placeholder.style.display = 'block';
+    this.placeholder.style.left = `${boardPos.x * BLOCK_SIZE}px`;
+    this.placeholder.style.top = `${boardPos.y * BLOCK_SIZE}px`;
+    this.placeholder.placeable = this.board.canPlaceTile(this.placeholder.tile, boardPos.x, boardPos.y);
+  }
+
+  private boardPosition(mouse: Position): Position|undefined {
+    if (mouse.x < this.boardOffset * BLOCK_SIZE || mouse.y < 0 ||
+        mouse.x >= (this.width + this.boardOffset) * BLOCK_SIZE ||
+        mouse.y >= this.height * BLOCK_SIZE) {
+      return undefined;
+    }
+    return {
+      x: Math.floor(mouse.x / BLOCK_SIZE),
+      y: Math.floor(mouse.y / BLOCK_SIZE)
+    };
+  }
+
+  increaseOffset(delta: number) {
+    this.boardOffset += delta;
+    this.boardRef.nativeElement.style.marginLeft = `${-this.boardOffset * BLOCK_SIZE}px`;
   }
 }
 
-// Transforms mouse coordinates relative to the board to the board position
-function boardTransform(mouse: Position, placeholder: Placeholder): Position | undefined {
-  if (mouse.x < 0 || mouse.y < 0 || mouse.x >= BLOCK_SIZE * BOARD_SIZE ||
-    mouse.y >= BLOCK_SIZE * BOARD_SIZE) {
-    return undefined;
+function rotateTile(tile: Tile) {
+  tile = deepCopy(tile);
+  if (tile.type === TileType.PIPES) {
+    tile.layout.push(tile.layout.shift());
   }
-  let maxX = BOARD_SIZE - 1;
-  let maxY = BOARD_SIZE - 1;
-  let px = mouse.x / BLOCK_SIZE;
-  let py = mouse.y / BLOCK_SIZE;
-  if (placeholder.domino.orientation == Orientation.HORIZONTAL) {
-    maxX--;
-    px -= 0.5;
-  }
-  if (placeholder.domino.orientation == Orientation.VERTICAL) {
-    maxY--;
-    py -= 0.5
-  }
-  return {
-    x: Math.max(0, Math.min(maxX, Math.floor(px))),
-    y: Math.max(0, Math.min(maxY, Math.floor(py)))
-  };
+  return tile;
 }

@@ -1,4 +1,0 @@
-<div class="domino" [ngClass]="{'vertical': domino.orientation == 'VERTICAL', 'horizontal': domino.orientation == 'HORIZONTAL'}">
-  <div *ngFor="let block of blocks" class="block-tile" [ngClass]="[block]"></div>
-  <div *ngIf="transition" class="transition-tile" [ngClass]="[transition]"></div>
-</div>

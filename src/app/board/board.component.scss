@@ -1,21 +1,23 @@
-.board-wrapper {
+.board-outer {
   position: absolute;
   left: 50%;
   top: 50%;
-  margin-top: -238px;
-  margin-left: -238px;
-  width: 476px;  // 10 + 7 * 96 + 10
-  height: 476px;
-  background-image: url('../../assets/board.png');
-  background-size: 476px 476px;
-  image-rendering: pixelated;
+  outline: 4px solid #30325c;
+}
+
+.board-overflow {
+  position: relative;
+  margin: 14px;
+  overflow: hidden;
 }
 
 .board {
   position: relative;
-  margin: 14px;
-  width: 448px;
-  height: 672px;
+  width: 6400px;
+  transition: margin 600ms;
+  background-image: url('../../assets/tile-empty.png');
+  background-size: 64px 64px;
+  image-rendering: pixelated;
 }
 
 .placeholder {
@@ -24,19 +26,49 @@
   opacity: 0.35;
 
   &.placeable {
-    outline: 2px solid green;
+    outline: 4px solid green;
     opacity: 0.6;
   }
 }
 
-.domino-outline {
+.smoke {
   position: absolute;
-  outline: 4px solid #7a83bf;
-  width: 128px;
-  height: 64px;
+  width: 16px;
+  height: 48px;
+  background: url('../../assets/smoke.gif');
+  background-size: 16px 48px;
+  opacity: 0.5;
+  left: 24px;
+  top: -50px;
 
-  &.vertical {
-    width: 64px;
-    height: 128px;
+  &:first-of-type {
+    left: 0;
   }
+  &:last-of-type {
+    left: 48px;
+  }
+}
+
+
+.a {
+  position: absolute;
+  top: 800px;
+  border: 1px solid red;
+  width: 800px;
+  height: 100px;
+  left: 50%;
+  margin-left: -400px;
+  overflow: hidden;
+}
+
+.b {
+  transition: margin 500ms;
+  width: 1200px;
+  height: 100px;
+  background: url('../../assets/board.png');
+}
+
+.board-outer {
+  position: absolute;
+  border: 1px;
 }

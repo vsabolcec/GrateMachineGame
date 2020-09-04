@@ -1,22 +1,24 @@
-<div class="board-wrapper" (mousemove)="onMouseMove($event)" (wheel)="onScroll($event)" (click)="onClick()">
-  <div #boardRef class="board">
-    <!-- Outline of placed dominoes (style purposes) -->
-    <div class="domino-outline" [ngStyle]="domino.style" *ngFor="let domino of dominos"
-        [ngClass]="{'vertical': domino.orientation == 'VERTICAL'}">
-    </div>
-    
-    <!-- All fixed dominoes -->
-    <domino *ngFor="let domino of dominos"
-            [domino]="domino"
-            style="position: absolute;"
-            [ngStyle]="domino.style">
-    </domino>
+<div class="board-outer"
+    [ngStyle]="boardOuterStyle"
+    (mousemove)="onMouseMove($event)"
+    (wheel)="onScroll($event)"
+    (click)="onClick()">
+  <div class="board-overflow" [ngStyle]="boardOverflowStyle">
+    <div #boardRef class="board" [ngStyle]="boardStyle">
+      <tile *ngFor="let placedTile of placedTiles"
+            [tile]="placedTile.tile"
+            [ngStyle]="placedTile.style"
+            style="position: absolute;">
+      </tile>
 
-    <!-- Domino placeholder -->
-    <domino class="placeholder"
-            [ngClass]="{'placeable': placeable}"
-            [domino]="placeholder.domino"
-            [ngStyle]="placeholder.style">
-    </domino>    
+      <tile *ngIf="placeholder !== undefined"
+            class="placeholder"
+            [tile]="placeholder.tile"
+            [ngStyle]="placeholder.style"
+            [ngClass]="{'placeable': placeholder.placeable}">
+      </tile>
+    </div>
   </div>
 </div>
+
+<button (click)="increaseOffset(3)">INCREASE OFFSET</button>

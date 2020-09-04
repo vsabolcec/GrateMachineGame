@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
-import {Domino} from './domino/domino.component';
+import { Tile } from './tile/tile.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventoryService {
-  private subject: Subject<Domino> = new Subject();
+  private subject: Subject<Tile> = new Subject();
 
   constructor() { }
 
-  changeDomino(domino: Domino) {
-    this.subject.next(domino);
+  changeDomino(tile: Tile) {
+    this.subject.next(tile);
   }
 
-  get observer(): Observable<Domino> {
+  get observer(): Observable<Tile> {
     return this.subject.asObservable();
   }
 }

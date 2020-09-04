@@ -1,5 +1,5 @@
 <div class="boo">
-  <p *ngFor="let domino of dominos; index as i">
-    <domino [domino]="domino" (click)="select(i)" [ngClass]="{'active': activeIndex == i}"></domino>
+  <p *ngFor="let tile of tiles; index as i">
+    <tile [tile]="tile" (click)="select(i)" [ngClass]="{'active': activeIndex == i}"></tile>
   </p>
 </div>

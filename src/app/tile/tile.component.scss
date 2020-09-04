@@ -1,0 +1,29 @@
+$tile-scale: 2;
+$tile-size: #{$tile-scale * 32px};
+
+:host {
+  position: relative;
+  display: inline-block;
+}
+
+.tile {
+  position: relative;
+  left: 0px;
+  top: 0px;
+  width: $tile-size;
+  height: $tile-size;
+  background-size: $tile-size $tile-size;
+  image-rendering: pixelated;
+
+  &.tile-pipes {
+    &.tile-pipes-1010 { background-image: url('../../assets/tiles/tile_1_0_1_0.png'); }
+    &.tile-pipes-0101 { background-image: url('../../assets/tiles/tile_0_1_0_1.png'); }
+    &.tile-pipes-1100 { background-image: url('../../assets/tiles/tile_1_1_0_0.png'); }
+    &.tile-pipes-0110 { background-image: url('../../assets/tiles/tile_0_1_1_0.png'); }
+    &.tile-pipes-0011 { background-image: url('../../assets/tiles/tile_0_0_1_1.png'); }
+    &.tile-pipes-1001 { background-image: url('../../assets/tiles/tile_1_0_0_1.png'); }
+    &.tile-pipes-1111 { background-image: url('../../assets/tiles/tile_2_0_2_0.png'); }
+  }
+
+  &.tile-steam { background-image: url('../../assets/steam.png'); }
+}
