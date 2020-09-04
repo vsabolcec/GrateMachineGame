@@ -1,3 +1,7 @@
+@import "../../font";
+@import "../../ui";
+@import "../../variables";
+
 .board-outer {
   position: absolute;
   left: 50%;
@@ -71,4 +75,11 @@
 .board-outer {
   position: absolute;
   border: 1px;
+}
+
+
+#back-button {
+  width: 48px;
+  height: 48px;
+  position: absolute;
 }

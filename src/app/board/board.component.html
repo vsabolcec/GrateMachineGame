@@ -1,3 +1,7 @@
+<div id="back-button" class="button" (click)="back()">
+  <img src="../../assets/ui/back.png">
+</div>
+
 <div class="board-outer"
     [ngStyle]="boardOuterStyle"
     (mousemove)="onMouseMove($event)"
@@ -21,4 +25,4 @@
   </div>
 </div>
 
-<button (click)="increaseOffset(3)">INCREASE OFFSET</button>
+<div (click)="increaseOffset(3)" class="button" style="position: absolute; left: 50%; margin-left: -125px; top: 100px;">INCREASE OFFSET</div>

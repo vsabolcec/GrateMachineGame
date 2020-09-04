@@ -3,6 +3,7 @@ import { InventoryService } from '../inventory.service';
 import { Board } from './board';
 import { Tile, TileType } from '../tile/tile.component';
 import { deepCopy } from '../utils';
+import { State, StatesService } from '../states.service';
 
 const BLOCK_SIZE: number = 64;
 
@@ -57,7 +58,9 @@ export class BoardComponent {
   // In the number of tiles
   private boardOffset: number = 0;
 
-  constructor(private readonly inventoryService: InventoryService) {}
+  constructor(
+      private readonly inventoryService: InventoryService,
+      private readonly statesService: StatesService) {}
 
   ngOnInit() {
     this.board = new Board(this.width, this.height);
@@ -155,6 +158,10 @@ export class BoardComponent {
   increaseOffset(delta: number) {
     this.boardOffset += delta;
     this.boardRef.nativeElement.style.marginLeft = `${-this.boardOffset * BLOCK_SIZE}px`;
+  }
+
+  back() {
+    this.statesService.changeState(State.START_MENU);
   }
 }
 

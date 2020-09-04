@@ -10,7 +10,7 @@ import { InventoryService } from '../inventory.service';
 export class InventoryComponent {
   tiles: Tile[] = [];
 
-  activeIndex = 0;
+  activeIndex: number;
 
   constructor(private readonly inventoryService: InventoryService) {
     // generate all possible dominos and store them

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StatesService, State } from '../states.service';
 
 @Component({
   selector: 'app-credits-menu',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreditsMenuComponent implements OnInit {
 
-  constructor() { }
+  constructor(private readonly statesService: StatesService) { }
 
   ngOnInit(): void {
   }
 
+  back() {
+    this.statesService.changeState(State.START_MENU);
+  }
 }
