@@ -1,8 +1,4 @@
 <app-start-menu *ngIf="state === 'START_MENU'"></app-start-menu>
 <app-options-menu *ngIf="state === 'OPTIONS_MENU'"></app-options-menu>
 <app-credits-menu *ngIf="state === 'CREDITS'"></app-credits-menu>
-
-<div *ngIf="state === 'GAME'">
-  <board width="8" height="4"></board>
-  <inventory></inventory>
-</div>
+<app-game *ngIf="state === 'GAME'"></app-game>

@@ -8,6 +8,7 @@ import { TileComponent } from './tile/tile.component';
 import { StartMenuComponent } from './start-menu/start-menu.component';
 import { OptionsMenuComponent } from './options-menu/options-menu.component';
 import { CreditsMenuComponent } from './credits-menu/credits-menu.component';
+import { GameComponent } from './game/game.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { CreditsMenuComponent } from './credits-menu/credits-menu.component';
     TileComponent,
     StartMenuComponent,
     OptionsMenuComponent,
-    CreditsMenuComponent
+    CreditsMenuComponent,
+    GameComponent
   ],
   imports: [
     BrowserModule

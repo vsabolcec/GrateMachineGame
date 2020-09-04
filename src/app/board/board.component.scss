@@ -83,3 +83,21 @@
   height: 48px;
   position: absolute;
 }
+
+.messages {
+  position: absolute;
+  top: 700px;
+  width: 750px;
+  left: 50%;
+  margin-left: -375px;
+
+  font-family: monospace;
+  color: rgba(222, 222, 222, 0.75);
+  font-size: 20px;
+
+  > li {
+    display: block;
+    margin-bottom: 20px;
+    line-height: 30px;
+  }
+}

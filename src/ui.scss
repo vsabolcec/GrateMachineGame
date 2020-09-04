@@ -5,7 +5,7 @@
 .slider {
     appearance: none;
     background: $text-color-light;
-    height: 10px;
+    height: 8px;
     width: 200px;
     margin: 10px;
 }
@@ -16,6 +16,7 @@
 
 .slider::-webkit-slider-thumb {
     border: none;
+    appearance: none;
     border-radius: 0px;
     width: 22px;
     height: 22px;

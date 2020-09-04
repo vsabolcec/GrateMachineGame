@@ -25,4 +25,6 @@
   </div>
 </div>
 
-<div (click)="increaseOffset(3)" class="button" style="position: absolute; left: 50%; margin-left: -125px; top: 100px;">INCREASE OFFSET</div>
+<ul class="messages">
+  <li *ngFor="let message of messages">{{ message }}</li>
+</ul>

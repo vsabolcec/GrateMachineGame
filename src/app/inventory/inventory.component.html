@@ -1,5 +1,17 @@
-<div class="boo">
-  <p *ngFor="let tile of tiles; index as i">
-    <tile [tile]="tile" (click)="select(i)" [ngClass]="{'active': activeIndex == i}"></tile>
-  </p>
+<div class="inventory">
+  <div *ngIf="inventory?.straightPipes > 0"
+       class="inventory-tile"
+       [ngClass]="{'active': active === 'STRAIGHT_PIPE'}"
+       (click)="setActive('STRAIGHT_PIPE')">
+    <tile [tile]="INVENTORY_CONSTS.STRAIGHT_PIPE_TILE"></tile>
+    <span class="count">{{ inventory.straightPipes }}</span>
+  </div>
+
+  <div *ngIf="inventory?.turnPipes > 0"
+       class="inventory-tile"
+       [ngClass]="{'active': active === 'TURN_PIPE'}"
+       (click)="setActive('TURN_PIPE')">
+    <tile [tile]="INVENTORY_CONSTS.TURN_PIPE_TILE"></tile>
+    <span class="count">{{ inventory.turnPipes }}</span>
+  </div>
 </div>

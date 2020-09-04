@@ -11,6 +11,7 @@
 
 #logo {
     pointer-events: none;
+    user-select: none;
     height: 250px;
     transition: .4s;
     image-rendering: pixelated;

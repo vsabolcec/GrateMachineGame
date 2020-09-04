@@ -4,15 +4,20 @@ import { Board } from './board';
 import { Tile, TileType } from '../tile/tile.component';
 import { deepCopy } from '../utils';
 import { State, StatesService } from '../states.service';
+import { InventoryTileType, LEVELS, Level, GameContext } from '../game/level';
+import { INVENTORY_CONSTS } from '../inventory/inventory.component';
+import { ParseErrorLevel } from '@angular/compiler';
+import { LIFECYCLE_HOOKS_VALUES } from '@angular/compiler/src/lifecycle_reflector';
 
 const BLOCK_SIZE: number = 64;
 
 interface Placeholder {
   tile: Tile,
+  inventoryTile: InventoryTileType,
   boardX: number,
   boardY: number,
   style: {
-    display: 'none'|'block',
+    display: 'none' | 'block',
     left: string,
     top: string
   },
@@ -50,7 +55,16 @@ export class BoardComponent {
 
   placeholder?: Placeholder = undefined;
 
-  placedTiles: PlacedTile[] = [];
+  get placedTiles(): PlacedTile[] {
+    const tiles = this.board.getTiles(this.boardOffset - this.width, this.boardOffset + this.width);
+    const convert = (e => {
+      return {
+        tile: e.tile,
+        style: {left: `${e.x * BLOCK_SIZE}px`, top: `${e.y * BLOCK_SIZE}px`}
+      }
+    });
+    return tiles.map(convert);
+  }
 
   // Last mouse position
   private mouseBoardPos: { x: number, y: number };
@@ -58,25 +72,39 @@ export class BoardComponent {
   // In the number of tiles
   private boardOffset: number = 0;
 
+  // Location of steam engine that, once it is connected to a pipe,
+  // should trigger offset increment
+  private targetPos: Position;
+
+  private levelIndex = 0;
+
   constructor(
       private readonly inventoryService: InventoryService,
       private readonly statesService: StatesService) {}
 
   ngOnInit() {
+    // Ensure we work with numbers!
+    this.width -= 0;
+    this.height -= 0;
     this.board = new Board(this.width, this.height);
-    this.inventoryService.observer.subscribe((tile: Tile) => {
-      this.placeholder = {
-        tile: deepCopy(tile),
-        boardX: 0,
-        boardY: 0,
-        style: { display: 'none', left: '0', top: '0' },
-        placeable: false
-      };
+    this.inventoryService.observer.subscribe((inventoryTile: InventoryTileType) => {
+      if (inventoryTile === undefined) {
+        this.placeholder = undefined;
+      } else {
+        this.placeholder = {
+          tile: fromInventoryTile(inventoryTile),
+          inventoryTile: inventoryTile,
+          boardX: 0,
+          boardY: 0,
+          style: { display: 'none', left: '0', top: '0' },
+          placeable: false
+        };
+      }
     });
 
     // set styles...
-    const outerWidth = this.width * BLOCK_SIZE + 14;
-    const outerHeight = this.height * BLOCK_SIZE + 14;
+    const outerWidth = this.width * BLOCK_SIZE + 28;
+    const outerHeight = this.height * BLOCK_SIZE + 28;
     this.boardOuterStyle = {
       width: `${outerWidth}px`,
       height: `${outerHeight}px`,
@@ -88,6 +116,30 @@ export class BoardComponent {
       height: `${this.height * BLOCK_SIZE}px`,
     };
     this.boardStyle = { height: `${this.height * BLOCK_SIZE}px` };
+    
+    this.setLevel(0);
+  }
+
+  setLevel(index: number) {
+    if (index >= LEVELS.length) {
+      console.log('YOU WON');
+      return;
+    }
+
+    this.levelIndex = index;
+    const level = LEVELS[index];
+    this.inventoryService.addBonus(level.startingBonus);
+
+    this.boardOffset = index * (this.width - 1);
+    if (this.boardRef) {
+      this.boardRef.nativeElement.style.marginLeft = `${-this.boardOffset * BLOCK_SIZE}px`;
+    }
+
+    // setup steam engines
+    this.board.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset, 2);
+    this.board.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset + this.width - 1, 2);
+
+    this.startMessages(level.messages);
   }
 
   onMouseMove(event: MouseEvent): void {
@@ -117,14 +169,18 @@ export class BoardComponent {
   onClick() {
     if (this.placeholder !== undefined && this.placeholder.placeable) {
       this.board.placeTile(this.placeholder.tile, this.placeholder.boardX, this.placeholder.boardY);
-      this.placedTiles.push({
-        tile: deepCopy(this.placeholder.tile),
-        style: {
-          left: `${this.placeholder.boardX * BLOCK_SIZE}px`,
-          top: `${this.placeholder.boardY * BLOCK_SIZE}px`
-        }
-      });
-      console.log(this.placedTiles);
+      this.inventoryService.reduceTile(this.placeholder.inventoryTile);
+      const level = LEVELS[this.levelIndex];
+      const context: GameContext = {  // << move this to a separate method
+        gratesRound: 0,
+        gratesTotal: 0,
+        board: this.board,
+        fromX: this.boardOffset,
+        toX: this.boardOffset + this.width - 1
+      };
+      if (level.completed(context)) {
+        this.setLevel(this.levelIndex + 1);
+      }
     }
   }
 
@@ -155,13 +211,27 @@ export class BoardComponent {
     };
   }
 
-  increaseOffset(delta: number) {
-    this.boardOffset += delta;
-    this.boardRef.nativeElement.style.marginLeft = `${-this.boardOffset * BLOCK_SIZE}px`;
-  }
-
   back() {
     this.statesService.changeState(State.START_MENU);
+  }
+
+  messages: string[] = [];
+
+  private startMessages(messages: string[]) {
+    this.messages = [];
+    const timeable = (messages: string[], messageIndex: number, letterIndex: number) => {
+      if (messageIndex >= messages.length) return;
+      if (letterIndex === 0) this.messages.push("");
+      if (letterIndex < messages[messageIndex].length) {
+        let last = this.messages.pop();
+        const letter = messages[messageIndex][letterIndex];
+        this.messages.push(last + letter);
+        setTimeout(() => { timeable(messages, messageIndex, letterIndex + 1); }, 30);
+      } else {
+        setTimeout(() => { timeable(messages, messageIndex + 1, 0); }, 800);
+      }
+    };
+    timeable(messages, 0, 0);
   }
 }
 
@@ -171,4 +241,15 @@ function rotateTile(tile: Tile) {
     tile.layout.push(tile.layout.shift());
   }
   return tile;
+}
+
+function fromInventoryTile(inventoryTile: InventoryTileType): Tile | undefined {
+  if (inventoryTile === InventoryTileType.STRAIGHT_PIPE) {
+    return deepCopy(INVENTORY_CONSTS.STRAIGHT_PIPE_TILE);
+  }
+  if (inventoryTile === InventoryTileType.TURN_PIPE) {
+    return deepCopy(INVENTORY_CONSTS.TURN_PIPE_TILE);
+  }
+  console.log('fromInventoryTile: should NOT reach this line');
+  return undefined;
 }
