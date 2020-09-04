@@ -1,0 +1,16 @@
+@import "../../font";
+@import "../../ui";
+@import "../../variables";
+
+#start-menu-area {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#logo {
+    pointer-events: none;
+    height: 250px;
+    transition: .4s;
+}
