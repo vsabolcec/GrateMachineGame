@@ -4,10 +4,9 @@ import { Board } from './board';
 import { Tile, TileType } from '../tile/tile.component';
 import { deepCopy } from '../utils';
 import { State, StatesService } from '../states.service';
-import { InventoryTileType, LEVELS, Level, GameContext } from '../game/level';
+import { InventoryTileType, LEVELS, GameContext } from '../game/level';
 import { INVENTORY_CONSTS } from '../inventory/inventory.component';
-import { ParseErrorLevel } from '@angular/compiler';
-import { LIFECYCLE_HOOKS_VALUES } from '@angular/compiler/src/lifecycle_reflector';
+import { SoundService } from '../sound.service';
 
 const BLOCK_SIZE: number = 64;
 
@@ -80,7 +79,8 @@ export class BoardComponent {
 
   constructor(
       private readonly inventoryService: InventoryService,
-      private readonly statesService: StatesService) {}
+      private readonly statesService: StatesService,
+      private readonly soundService: SoundService) {}
 
   ngOnInit() {
     // Ensure we work with numbers!
@@ -213,6 +213,7 @@ export class BoardComponent {
 
   back() {
     this.statesService.changeState(State.START_MENU);
+    this.soundService.play('button_click');
   }
 
   messages: string[] = [];
