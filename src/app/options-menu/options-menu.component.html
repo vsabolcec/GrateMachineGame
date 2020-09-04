@@ -6,28 +6,18 @@
 <div id="container">
     <h1>Options</h1>
     <div class="item">
-        <p>Option item</p>
-        <input class="slider" min="1" max="100" value="100" type="range">
-        <p>100</p>
+        <p>Sound volume</p>
+        <input [(ngModel)]="soundVolume" (mouseup)="testSoundVolume()" class="slider" min="0" max="100" value="100" type="range">
+        <p>{{ soundVolume }}</p>
     </div>
     <div class="item">
-        <p>Option item</p>
-        <input class="slider" min="1" max="100" value="100" type="range">
-        <p>100</p>
-    </div>
-    <div class="item">
-        <p>Option item</p>
-        <input class="slider" min="1" max="100" value="100" type="range">
-        <p>100</p>
-    </div>
-    <div class="item">
-        <p>Option item</p>
-        <input class="slider" min="1" max="100" value="100" type="range">
-        <p>100</p>
+        <p>Music volume</p>
+        <input [(ngModel)]="musicVolume" class="slider" min="0" max="100" value="100" type="range">
+        <p>{{ musicVolume }}</p>
     </div>
 
     <div class="item">
-        <div class="button">Reset to defaults</div>
+        <div (click)="resetToDefaults()" class="button">Reset to defaults</div>
     </div>
 
 </div>

@@ -4,6 +4,7 @@ import { Board } from './board';
 import { Tile, TileType } from '../tile/tile.component';
 import { deepCopy } from '../utils';
 import { State, StatesService } from '../states.service';
+import { SoundService } from '../sound.service';
 
 const BLOCK_SIZE: number = 64;
 
@@ -60,7 +61,8 @@ export class BoardComponent {
 
   constructor(
       private readonly inventoryService: InventoryService,
-      private readonly statesService: StatesService) {}
+      private readonly statesService: StatesService,
+      private readonly soundService: SoundService) {}
 
   ngOnInit() {
     this.board = new Board(this.width, this.height);
@@ -158,10 +160,12 @@ export class BoardComponent {
   increaseOffset(delta: number) {
     this.boardOffset += delta;
     this.boardRef.nativeElement.style.marginLeft = `${-this.boardOffset * BLOCK_SIZE}px`;
+    this.soundService.play('button_click');
   }
 
   back() {
     this.statesService.changeState(State.START_MENU);
+    this.soundService.play('button_click');
   }
 }
 
