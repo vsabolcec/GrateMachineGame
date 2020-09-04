@@ -1,0 +1,45 @@
+@import "../../font";
+@import "../../ui";
+@import "../../variables";
+
+
+:host {
+    color: $text-color-light;
+    font-family: VCR_OSD_MONO;
+}
+
+p {
+    font-size: $text-size-general;
+    user-select: none;
+}
+
+h1 {
+    font-size: $text-size-menu-title;
+    user-select: none;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.item {
+    display: flex;
+    width: 600px;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#back-button {
+    width: 48px;
+    height: 48px;
+    position: absolute;
+}
+
+#back-button > img {
+    image-rendering: crisp-edges; 
+    width: 28px;
+    height: 28px;
+}

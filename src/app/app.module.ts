@@ -5,13 +5,19 @@ import { AppComponent } from './app.component';
 import { BoardComponent } from './board/board.component';
 import { InventoryComponent } from './inventory/inventory.component';
 import { TileComponent } from './tile/tile.component';
+import { StartMenuComponent } from './start-menu/start-menu.component';
+import { OptionsMenuComponent } from './options-menu/options-menu.component';
+import { CreditsMenuComponent } from './credits-menu/credits-menu.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BoardComponent,
     InventoryComponent,
-    TileComponent
+    TileComponent,
+    StartMenuComponent,
+    OptionsMenuComponent,
+    CreditsMenuComponent
   ],
   imports: [
     BrowserModule
