@@ -48,6 +48,10 @@ export class InventoryComponent {
       this.reduce(inventoryTile);
       console.log(this.inventory);
     });
+    this.inventoryService.increased.subscribe((inventoryTile) => {
+      this.increase(inventoryTile);
+      console.log(this.inventory);
+    });
   }
 
   setActive(inventoryTileType: InventoryTileType) {
@@ -67,6 +71,19 @@ export class InventoryComponent {
         return;
       default:
         console.log('InventoryComp.reduce: should NOT reach this line');
+    }
+  }
+
+  private increase(inventoryTile: InventoryTileType) {
+    switch (inventoryTile) {
+      case InventoryTileType.STRAIGHT_PIPE:
+        this.inventory.straightPipes++;
+        return;
+      case InventoryTileType.TURN_PIPE:
+        this.inventory.turnPipes++;
+        return;
+      default:
+        console.log('InventoryComp.increase: should NOT reach this line');
     }
   }
 

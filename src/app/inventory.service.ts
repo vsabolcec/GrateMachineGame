@@ -11,6 +11,7 @@ export class InventoryService {
   private subject: Subject<InventoryTileType | undefined> = new Subject();
   private bonusAcquiredSubject: Subject<InventoryTiles> = new Subject();
   private reduceSubject: Subject<InventoryTileType> = new Subject();
+  private increaseSubject: Subject<InventoryTileType> = new Subject();
 
   changeDomino(tile: InventoryTileType | undefined) {
     this.subject.next(tile);
@@ -32,7 +33,15 @@ export class InventoryService {
     this.reduceSubject.next(tile);
   }
 
+  increaseTile(tile: InventoryTileType) {
+    this.increaseSubject.next(tile);
+  }
+
   get reduced(): Observable<InventoryTileType> {
     return this.reduceSubject.asObservable();
+  }
+
+  get increased(): Observable<InventoryTileType> {
+    return this.increaseSubject.asObservable();
   }
 }
