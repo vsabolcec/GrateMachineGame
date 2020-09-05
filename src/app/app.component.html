@@ -1,4 +1,10 @@
-<app-start-menu *ngIf="state === 'START_MENU'"></app-start-menu>
-<app-options-menu *ngIf="state === 'OPTIONS_MENU'"></app-options-menu>
-<app-credits-menu *ngIf="state === 'CREDITS'"></app-credits-menu>
-<app-game *ngIf="state === 'GAME'"></app-game>
+<div *ngIf="state !== 'START_MENU'" id="back-button" class="button" (click)="back()">
+  <img src="../../assets/ui/back.png">
+</div>
+
+<div class="wrapper">
+  <app-start-menu *ngIf="state === 'START_MENU'"></app-start-menu>
+  <app-options-menu *ngIf="state === 'OPTIONS_MENU'"></app-options-menu>
+  <app-credits-menu *ngIf="state === 'CREDITS'"></app-credits-menu>
+  <app-game *ngIf="state === 'GAME'"></app-game>
+</div>

@@ -14,9 +14,4 @@ export class CreditsMenuComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
-  back() {
-    this.statesService.changeState(State.START_MENU);
-    this.soundService.play('button_click');
-  }
 }

@@ -27,6 +27,8 @@ export interface Level {
   messages: string[];
   // callback koji kaze kad si spreman za sljedeci level
   completed: (context: GameContext) => boolean;
+  // some fields may be blocked...
+  blockedFields?: string[];
 }
 
 const MIDDLE_HEIGHT = 2;
@@ -56,6 +58,13 @@ export const LEVELS: Level[] = [
   // level 3
   {
     startingBonus: { turnPipes: 16 },
+    blockedFields: [
+      '0000000000',
+      '0000000010',
+      '0010000000',
+      '0001100000',
+      '0000100000'
+    ],
     messages: [
       "Damn it! There were no more straight pipes to acquire.",
       "Ooh, and some rats made damage on certain cells."

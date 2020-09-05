@@ -16,11 +16,6 @@ export class OptionsMenuComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  back() {
-    this.statesService.changeState(State.START_MENU);
-    this.soundService.play('button_click');
-  }
-
   testSoundVolume() {
     this.soundService.play('button_click'); //maybe add another sound effect for this one
   }

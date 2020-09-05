@@ -12,6 +12,7 @@ $tile-size: #{$tile-scale * 32px};
   top: 0px;
   width: $tile-size;
   height: $tile-size;
+  background-color: #222541;
   background-size: $tile-size $tile-size;
   image-rendering: pixelated;
 
@@ -30,20 +31,41 @@ $tile-size: #{$tile-scale * 32px};
   &.tile-steam {
     background-image: url('../../assets/game/factory_0_0_0_0.gif');
   
-    //&.tile-steam-1000 { background-image: url('../../assets/game/factory_1_0_0_0.gif'); }
+    &.tile-steam-1000 { background-image: url('../../assets/game/factory_1_0_0_0.gif'); }
     &.tile-steam-0100 { background-image: url('../../assets/game/factory_0_1_0_0.gif'); }
     &.tile-steam-0010 { background-image: url('../../assets/game/factory_0_0_1_0.gif'); }
     &.tile-steam-0001 { background-image: url('../../assets/game/factory_0_0_0_1.gif'); }
+    &.tile-steam-0101 { background-image: url('../../assets/game/factory_0_1_0_1.gif'); }
+    &.tile-steam-1010 { background-image: url('../../assets/game/factory_1_0_1_0.gif'); }
+    &.tile-steam-1100 { background-image: url('../../assets/game/factory_1_1_0_0.gif'); }
+    &.tile-steam-0110 { background-image: url('../../assets/game/factory_0_1_1_0.gif'); }
+    &.tile-steam-0011 { background-image: url('../../assets/game/factory_0_0_1_1.gif'); }
+    &.tile-steam-1001 { background-image: url('../../assets/game/factory_1_0_0_1.gif'); }
+    &.tile-steam-1110 { background-image: url('../../assets/game/factory_1_1_1_0.gif'); }
+    &.tile-steam-0111 { background-image: url('../../assets/game/factory_0_1_1_1.gif'); }
+    &.tile-steam-1011 { background-image: url('../../assets/game/factory_1_0_1_1.gif'); }
+    &.tile-steam-1101 { background-image: url('../../assets/game/factory_1_1_0_1.gif'); }
+    &.tile-steam-1111 { background-image: url('../../assets/game/factory_1_1_1_1.gif'); }
   }
 
   &.tile-machine {
     background-image: url('../../assets/game/grate_machine_0_0_0_0.gif');
     
+    &.tile-machine-0000 { opacity: 0.7; }
     &.tile-machine-1000 { background-image: url('../../assets/game/grate_machine_1_0_0_0.gif'); }
     &.tile-machine-0100 { background-image: url('../../assets/game/grate_machine_0_1_0_0.gif'); }
-    //&.tile-machine-0010 { background-image: url('../../assets/game/grate_machine_0_0_1_0.gif'); }
+    &.tile-machine-0010 { background-image: url('../../assets/game/grate_machine_0_0_1_0.gif'); }
     &.tile-machine-0001 { background-image: url('../../assets/game/grate_machine_0_0_0_1.gif'); }
-
-    //&.tile-machine-1010 { background-image: url('../../assets/game/grate_machine_0_1_0_1.gif'); }
+    &.tile-machine-0101 { background-image: url('../../assets/game/grate_machine_0_1_0_1.gif'); }
+    &.tile-machine-1010 { background-image: url('../../assets/game/grate_machine_1_0_1_0.gif'); }
+    &.tile-machine-1100 { background-image: url('../../assets/game/grate_machine_1_1_0_0.gif'); }
+    &.tile-machine-0110 { background-image: url('../../assets/game/grate_machine_0_1_1_0.gif'); }
+    &.tile-machine-0011 { background-image: url('../../assets/game/grate_machine_0_0_1_1.gif'); }
+    &.tile-machine-1001 { background-image: url('../../assets/game/grate_machine_1_0_0_1.gif'); }
+    &.tile-machine-1110 { background-image: url('../../assets/game/grate_machine_1_1_1_0.gif'); }
+    &.tile-machine-0111 { background-image: url('../../assets/game/grate_machine_0_1_1_1.gif'); }
+    &.tile-machine-1011 { background-image: url('../../assets/game/grate_machine_1_0_1_1.gif'); }
+    &.tile-machine-1101 { background-image: url('../../assets/game/grate_machine_1_1_0_1.gif'); }
+    &.tile-machine-1111 { background-image: url('../../assets/game/grate_machine_1_1_1_1.gif'); }
   }
 }

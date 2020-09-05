@@ -5,7 +5,7 @@
 .board-outer {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 120px;
   outline: 4px solid #30325c;
 }
 
@@ -53,56 +53,32 @@
   }
 }
 
-
-.a {
-  position: absolute;
-  top: 800px;
-  border: 1px solid red;
-  width: 800px;
-  height: 100px;
-  left: 50%;
-  margin-left: -400px;
-  overflow: hidden;
-}
-
-.b {
-  transition: margin 500ms;
-  width: 1200px;
-  height: 100px;
-  background: url('../../assets/board.png');
-}
-
-.board-outer {
-  position: absolute;
-  border: 1px;
-}
-
-
-#back-button {
-  width: 48px;
-  height: 48px;
-  position: absolute;
-}
-
 #undo-button {
   position: absolute;
-  left: 55%;
+  left: 50%;
+  width: 180px;
+  margin-left: 134px;
+  top: 2px;
 }
 
 .messages {
   position: absolute;
-  top: 700px;
-  width: 750px;
+  top: 480px;
+  width: 668px;
   left: 50%;
-  margin-left: -375px;
+  margin-left: -334px;
 
-  font-family: monospace;
+  font-family: "VCR_OSD_MONO";
   color: rgba(222, 222, 222, 0.75);
-  font-size: 20px;
+  font-size: 18px;
+  padding: 0px;
 
   > li {
+    margin-left: 0;
+    text-indent: 0;
+    list-style-type: square;
     display: block;
-    margin-bottom: 20px;
-    line-height: 30px;
+    margin-bottom: 14px;
+    line-height: 26px;
   }
 }

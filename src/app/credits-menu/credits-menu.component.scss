@@ -37,15 +37,3 @@ p {
     align-content: flex-end;
     align-items: center;
 }
-
-#back-button {
-    width: 48px;
-    height: 48px;
-    position: absolute;
-}
-
-#back-button > img {
-    image-rendering: crisp-edges; 
-    width: 28px;
-    height: 28px;
-}

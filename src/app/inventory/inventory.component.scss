@@ -1,22 +1,27 @@
 .inventory {
-  position: relative;
+  position: absolute;
   margin: 0 auto;
-  margin-top: 100px;
   left: 50%;
-  margin-left: -320px;
-  width: 640px;
+  margin-left: -338px;
+  width: 676px;
+  background: #30325c;
+  height: 84px;
+  top: 10px;
 }
 
 .inventory-tile {
   position: relative;
   display: inline-block;
-  margin-right: 20px;
+  margin-left: 10px;
+  margin-top: 10px;
+  width: 64px;
+  height: 64px;
 
   &.active {
-    outline: 4px solid #fff;
+    outline: 4px solid #ddd;
   }
   &:hover {
-    outline: 4px solid #4a5386;
+    outline: 4px solid #616394;
   }
 
   > .count {

@@ -107,8 +107,7 @@ export class BoardComponent {
     this.boardOuterStyle = {
       width: `${outerWidth}px`,
       height: `${outerHeight}px`,
-      marginLeft: `${-outerWidth / 2}px`,
-      marginTop: `${-outerHeight / 2}px`
+      marginLeft: `${-outerWidth / 2}px`
     };
     this.boardOverflowStyle = {
       width: `${this.width * BLOCK_SIZE}px`,
@@ -138,8 +137,16 @@ export class BoardComponent {
     this.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset, 2);
     this.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset + this.width - 1, 2);
 
-    this.placeTile({type: TileType.BLOCKED}, 14, 2);
-    this.placeTile({type: TileType.GRATE_MACHINE}, 4, 2);
+    // setup blocked fields
+    if (level.blockedFields !== undefined) {
+      for (let j = 0; j < this.height; ++j) {
+        for (let i = 0; i < this.width; ++i) {
+          if (level.blockedFields[j][i] === '1') {
+            this.placeTile({type: TileType.BLOCKED}, this.boardOffset + i, j);
+          }
+        }
+      }
+    }
 
     // reset undo buffer
     this.undoBuffer = []
@@ -148,6 +155,7 @@ export class BoardComponent {
   }
 
   onMouseMove(event: MouseEvent): void {
+    event.preventDefault();
     const boardOffset = this.boardRef.nativeElement.getBoundingClientRect();
     this.mouseBoardPos = {
       x: event.clientX - boardOffset.left,
@@ -217,11 +225,6 @@ export class BoardComponent {
       x: Math.floor(mouse.x / BLOCK_SIZE),
       y: Math.floor(mouse.y / BLOCK_SIZE)
     };
-  }
-
-  back() {
-    this.statesService.changeState(State.START_MENU);
-    this.soundService.play('button_click');
   }
 
   undo() {
