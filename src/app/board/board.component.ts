@@ -28,6 +28,11 @@ interface Position {
   y: number
 }
 
+interface TypedPosition {
+  pos: Position,
+  inventoryTile: InventoryTileType
+}
+
 interface PlacedTile {
   tile: Tile,
   style: { left: string, top: string }
@@ -76,6 +81,9 @@ export class BoardComponent {
   private targetPos: Position;
 
   levelIndex = 0;
+
+  // Array of tiles in the order they were put on the board.
+  private undoBuffer: Array<TypedPosition>;
 
   constructor(
       private readonly inventoryService: InventoryService,
@@ -141,6 +149,9 @@ export class BoardComponent {
 
     this.board.placeTile({type: TileType.BLOCKED}, 14, 2);
 
+    // reset undo buffer
+    this.undoBuffer = []
+
     this.startMessages(level.messages);
   }
 
@@ -170,6 +181,10 @@ export class BoardComponent {
 
   onClick() {
     if (this.placeholder !== undefined && this.placeholder.placeable) {
+      this.undoBuffer.push(
+        {pos: {x: this.placeholder.boardX,
+               y: this.placeholder.boardY},
+         inventoryTile: this.placeholder.inventoryTile})
       this.board.placeTile(this.placeholder.tile, this.placeholder.boardX, this.placeholder.boardY);
       this.inventoryService.reduceTile(this.placeholder.inventoryTile);
       const level = LEVELS[this.levelIndex];
@@ -219,7 +234,12 @@ export class BoardComponent {
   }
 
   undo() {
-
+    this.soundService.play('button_click');
+    if (this.undoBuffer.length == 0) return;
+    var lastTile = this.undoBuffer[this.undoBuffer.length - 1]
+    this.board.removeTile(lastTile.pos.x, lastTile.pos.y);
+    this.inventoryService.increaseTile(lastTile.inventoryTile);
+    this.undoBuffer.splice(-1, 1);
   }
 
   messages: string[][] = [];
