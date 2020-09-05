@@ -148,6 +148,13 @@ export class BoardComponent {
       }
     }
 
+    // setup grate machines
+    if (level.grateMachines !== undefined) {
+      for (const machine of level.grateMachines) {
+        this.placeTile({type: TileType.GRATE_MACHINE}, this.boardOffset + machine.x, machine.y);
+      }
+    }
+
     // reset undo buffer
     this.undoBuffer = []
 
@@ -250,10 +257,10 @@ export class BoardComponent {
         this.messages[lvl].push(last + letter);
         setTimeout(() => { timeable(messages, lvl, messageIndex, letterIndex + 1); }, 30);
       } else {
-        setTimeout(() => { timeable(messages, lvl, messageIndex + 1, 0); }, 800);
+        setTimeout(() => { timeable(messages, lvl, messageIndex + 1, 0); }, 500);
       }
     };
-    timeable(messages, this.levelIndex, 0, 0);
+    setTimeout(() => { timeable(messages, this.levelIndex, 0, 0); }, 500);
   }
 
 

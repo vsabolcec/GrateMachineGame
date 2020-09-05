@@ -1,0 +1,27 @@
+@import "../font";
+@import "../ui";
+@import "../variables";
+
+.wrapper {
+  position: absolute;
+  width: 900px;
+  height: 640px;
+  top: 50px;
+  left: 50%;
+  margin-left: -450px;
+}
+
+#back-button {
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  left: 50%;
+  margin-left: -550px;
+  top: 50px;
+}
+
+#back-button > img {
+  image-rendering: pixelated;
+  width: 28px;
+  height: 28px;
+}

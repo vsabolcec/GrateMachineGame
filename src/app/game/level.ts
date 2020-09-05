@@ -29,6 +29,8 @@ export interface Level {
   completed: (context: GameContext) => boolean;
   // some fields may be blocked...
   blockedFields?: string[];
+  // list of grates machines
+  grateMachines?: Array<{x: number, y: number}>;
 }
 
 const MIDDLE_HEIGHT = 2;
@@ -68,6 +70,16 @@ export const LEVELS: Level[] = [
     messages: [
       "Damn it! There were no more straight pipes to acquire.",
       "Ooh, and some rats made damage on certain cells."
+    ],
+    completed: defaultComplete
+  },
+  // level 4
+  {
+    startingBonus: { straightPipes: 8, turnPipes: 3 },
+    grateMachines: [ {x: 6, y: 0} ],
+    messages: [
+      "OK, if I've spent all money on the pipes!",
+      "It's time to produce some grates finally! Connect the grate machine to both steam engine parts!"
     ],
     completed: defaultComplete
   }
