@@ -25,6 +25,6 @@
   </div>
 </div>
 
-<ul class="messages">
-  <li *ngFor="let message of messages">{{ message }}</li>
+<ul class="messages" *ngIf="messages[levelIndex]">
+  <li *ngFor="let message of messages[levelIndex]">{{ message }}</li>
 </ul>

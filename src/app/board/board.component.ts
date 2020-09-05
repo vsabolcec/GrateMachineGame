@@ -75,7 +75,7 @@ export class BoardComponent {
   // should trigger offset increment
   private targetPos: Position;
 
-  private levelIndex = 0;
+  levelIndex = 0;
 
   constructor(
       private readonly inventoryService: InventoryService,
@@ -138,6 +138,8 @@ export class BoardComponent {
     // setup steam engines
     this.board.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset, 2);
     this.board.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset + this.width - 1, 2);
+
+    this.board.placeTile({type: TileType.BLOCKED}, 14, 2);
 
     this.startMessages(level.messages);
   }
@@ -216,23 +218,24 @@ export class BoardComponent {
     this.soundService.play('button_click');
   }
 
-  messages: string[] = [];
+  messages: string[][] = [];
 
   private startMessages(messages: string[]) {
-    this.messages = [];
-    const timeable = (messages: string[], messageIndex: number, letterIndex: number) => {
+    this.messages.push([]);
+    const timeable = (messages: string[], lvl: number, messageIndex: number, letterIndex: number) => {
+      if (lvl != this.levelIndex) return;
       if (messageIndex >= messages.length) return;
-      if (letterIndex === 0) this.messages.push("");
+      if (letterIndex === 0) this.messages[lvl].push("");
       if (letterIndex < messages[messageIndex].length) {
-        let last = this.messages.pop();
+        const last = this.messages[lvl].pop();
         const letter = messages[messageIndex][letterIndex];
-        this.messages.push(last + letter);
-        setTimeout(() => { timeable(messages, messageIndex, letterIndex + 1); }, 30);
+        this.messages[lvl].push(last + letter);
+        setTimeout(() => { timeable(messages, lvl, messageIndex, letterIndex + 1); }, 30);
       } else {
-        setTimeout(() => { timeable(messages, messageIndex + 1, 0); }, 800);
+        setTimeout(() => { timeable(messages, lvl, messageIndex + 1, 0); }, 800);
       }
     };
-    timeable(messages, 0, 0);
+    timeable(messages, this.levelIndex, 0, 0);
   }
 }
 

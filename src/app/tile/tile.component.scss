@@ -26,4 +26,5 @@ $tile-size: #{$tile-scale * 32px};
   }
 
   &.tile-steam { background-image: url('../../assets/steam.png'); }
+  &.tile-blocked { background-image: url('../../assets/tile-blocked.png'); }
 }
