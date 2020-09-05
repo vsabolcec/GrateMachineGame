@@ -26,6 +26,8 @@ export class Board {
     this.updateConnectivity(tile, x, y);
   }
 
+
+
   canPlaceTile(tile: Tile, x: number, y: number): boolean {
     if (this.tiles === undefined || this.tiles[x] === undefined)
       return false;

@@ -2,6 +2,10 @@
   <img src="../../assets/ui/back.png">
 </div>
 
+<div id="undo-button" class="button" (click)="undo()">
+  Undo
+</div>
+
 <div class="board-outer"
     [ngStyle]="boardOuterStyle"
     (mousemove)="onMouseMove($event)"
