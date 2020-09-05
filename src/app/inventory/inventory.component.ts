@@ -46,11 +46,9 @@ export class InventoryComponent {
     });
     this.inventoryService.reduced.subscribe((inventoryTile) => {
       this.reduce(inventoryTile);
-      console.log(this.inventory);
     });
     this.inventoryService.increased.subscribe((inventoryTile) => {
       this.increase(inventoryTile);
-      console.log(this.inventory);
     });
   }
 

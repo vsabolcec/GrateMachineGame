@@ -53,7 +53,6 @@ export class Board {
       if (otherTile === undefined) continue;
       if (tile.type === TileType.PIPES && tile.layout[side[i]] > 0 &&
           otherTile.type === TileType.BLOCKED) {
-        console.log("HEY");
         return false;
       }
     }

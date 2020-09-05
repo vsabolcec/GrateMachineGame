@@ -202,8 +202,6 @@ export class BoardComponent {
       if (level.completed(context)) {
         this.setLevel(this.levelIndex + 1);
       }
-
-      console.log(this.placedTiles);
     }
   }
 
