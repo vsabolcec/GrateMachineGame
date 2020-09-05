@@ -232,6 +232,7 @@ export class BoardComponent {
     this.board.removeTile(lastTile.pos.x, lastTile.pos.y);
     this.inventoryService.increaseTile(lastTile.inventoryTile);
     this.undoBuffer.splice(-1, 1);
+    this.updatePlacedTiles();
   }
 
   messages: string[][] = [];
@@ -257,6 +258,10 @@ export class BoardComponent {
 
   private placeTile(tile: Tile, x: number, y: number) {
     if (!this.board.placeTile(tile, x, y)) return;
+    this.updatePlacedTiles();
+  }
+
+  private updatePlacedTiles() {
     const tiles = this.board.getTiles(this.boardOffset - this.width, this.boardOffset + this.width);
     const convert = (e => {
       return {
