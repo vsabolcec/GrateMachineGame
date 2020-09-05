@@ -2,7 +2,8 @@
 <div id="start-menu-area">
     <img id="logo" src="../../assets/logo.png">
     <div id="buttons-area">
-        <div class="button" (click)="startGame()">Play</div>
+        <div *ngIf="started" class="button" (click)="resumeGame()">Resume game</div>
+        <div class="button" (click)="startGame()">New game</div>
         <div class="button" (click)="startOptions()">Options</div>
         <div class="button" (click)="startCredits()">Credits</div>
     </div>

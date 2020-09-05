@@ -13,8 +13,17 @@ export class StartMenuComponent {
               private readonly soundService: SoundService) {
     soundService.set('button_click', new Audio("../../assets/sound/button_click.wav"));
   }
+  
+  get started(): boolean {
+    return this.statesService.started;
+  }
 
   startGame() {
+    this.statesService.changeState(State.NEW_GAME);
+    this.soundService.play('button_click');
+  }
+
+  resumeGame() {
     this.statesService.changeState(State.GAME);
     this.soundService.play('button_click');
   }

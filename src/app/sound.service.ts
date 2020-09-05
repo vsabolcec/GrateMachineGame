@@ -5,7 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class SoundService {
   private volume_: number;
-  private soundMap_: Map<string, HTMLAudioElement> = new Map();
+  //private soundMap_: Map<string, HTMLAudioElement> = new Map();
+  private soundMap_: Map<string, string> = new Map();
 
   constructor() {
     const volume_from_settings = localStorage.getItem("sound_volume");
@@ -16,19 +17,24 @@ export class SoundService {
     }
   }
 
+  
   public set(key: string, value: HTMLAudioElement) {
     this.soundMap_[key] = value;
   }
+  
 
   public play(key: string): void {
     if(!this.soundMap_[key])
       return;
-    this.soundMap_[key].volume = this.volume / 100;
-    var promise = this.soundMap_[key].play();
+    const audio = this.soundMap_[key];
+    audio.volume = this.volume / 100;
+    audio.pause();
+    audio.currentTime = 0;
+    const promise = audio.play();
     if (promise !== undefined) {
-        promise.catch(error => {
-          console.log(error, "For the best experience allow the website to play audio automatically.");
-        });
+      promise.catch(error => {
+        console.log(error, "For the best experience allow the website to play audio automatically.");
+      });
     }
   }
 
