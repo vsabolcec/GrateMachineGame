@@ -18,12 +18,13 @@ export class Board {
     }
   }
 
-  placeTile(tile: Tile, x: number, y: number): void {
-    if (this.tiles[x][y] !== undefined) return;
+  placeTile(tile: Tile, x: number, y: number): boolean {
+    if (this.tiles[x][y] !== undefined) return false;
     // place tile
     this.tiles[x][y] = deepCopy(tile);
     // update connectivity
     this.updateConnectivity(tile, x, y);
+    return true;
   }
 
 
