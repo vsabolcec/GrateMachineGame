@@ -172,11 +172,7 @@ export class BoardComponent {
 
   onClick() {
     if (this.placeholder !== undefined && this.placeholder.placeable) {
-      this.undoBuffer.push(
-        {pos: {x: this.placeholder.boardX,
-               y: this.placeholder.boardY},
-         inventoryTile: this.placeholder.inventoryTile})
-      this.placeTile(this.placeholder.tile, this.placeholder.boardX, this.placeholder.boardY);
+      this.placeTilePlayer(this.placeholder.tile, this.placeholder.boardX, this.placeholder.boardY, this.placeholder.inventoryTile);
       this.placeholder.placeable = false;
       this.inventoryService.reduceTile(this.placeholder.inventoryTile);
       const level = LEVELS[this.levelIndex];
@@ -229,10 +225,9 @@ export class BoardComponent {
     this.soundService.play('button_click');
     if (this.undoBuffer.length == 0) return;
     var lastTile = this.undoBuffer[this.undoBuffer.length - 1]
-    this.board.removeTile(lastTile.pos.x, lastTile.pos.y);
+    this.removeTile(lastTile.pos.x, lastTile.pos.y);
     this.inventoryService.increaseTile(lastTile.inventoryTile);
     this.undoBuffer.splice(-1, 1);
-    this.updatePlacedTiles();
   }
 
   messages: string[][] = [];
@@ -256,12 +251,25 @@ export class BoardComponent {
   }
 
 
-  private placeTile(tile: Tile, x: number, y: number) {
-    if (!this.board.placeTile(tile, x, y)) return;
-    this.updatePlacedTiles();
+  private placeTilePlayer(tile: Tile, x: number, y: number, tileType: InventoryTileType) {
+    this.placeTile(tile, x, y)
+    this.undoBuffer.push(
+      {pos: {x: x,
+             y: y},
+       inventoryTile: tileType})
   }
 
-  private updatePlacedTiles() {
+  private placeTile(tile: Tile, x: number, y: number) {
+    if (!this.board.placeTile(tile, x, y)) return;
+    this.updateTiles();
+  }
+
+  private removeTile(x: number, y: number) {
+    this.board.removeTile(x, y);
+    this.updateTiles();
+  }
+
+  private updateTiles() {
     const tiles = this.board.getTiles(this.boardOffset - this.width, this.boardOffset + this.width);
     const convert = (e => {
       return {
