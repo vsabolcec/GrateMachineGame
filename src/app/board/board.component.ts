@@ -116,7 +116,7 @@ export class BoardComponent {
       height: `${this.height * BLOCK_SIZE}px`,
     };
     this.boardStyle = { height: `${this.height * BLOCK_SIZE}px` };
-    
+
     this.setLevel(0);
   }
 
@@ -148,7 +148,7 @@ export class BoardComponent {
       x: event.clientX - boardOffset.left,
       y: event.clientY - boardOffset.top
     };
-    if (this.placeholder) {  
+    if (this.placeholder) {
       this.updatePlaceholder();
     }
   }
@@ -214,6 +214,10 @@ export class BoardComponent {
   back() {
     this.statesService.changeState(State.START_MENU);
     this.soundService.play('button_click');
+  }
+
+  undo() {
+
   }
 
   messages: string[] = [];
