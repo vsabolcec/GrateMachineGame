@@ -28,6 +28,11 @@ interface Position {
   y: number
 }
 
+interface TypedPosition {
+  pos: Position,
+  inventoryTile: InventoryTileType
+}
+
 interface PlacedTile {
   tile: Tile,
   style: { left: string, top: string }
@@ -54,16 +59,7 @@ export class BoardComponent {
 
   placeholder?: Placeholder = undefined;
 
-  get placedTiles(): PlacedTile[] {
-    const tiles = this.board.getTiles(this.boardOffset - this.width, this.boardOffset + this.width);
-    const convert = (e => {
-      return {
-        tile: e.tile,
-        style: {left: `${e.x * BLOCK_SIZE}px`, top: `${e.y * BLOCK_SIZE}px`}
-      }
-    });
-    return tiles.map(convert);
-  }
+  placedTiles: PlacedTile[] = [];
 
   // Last mouse position
   private mouseBoardPos: { x: number, y: number };
@@ -76,6 +72,9 @@ export class BoardComponent {
   private targetPos: Position;
 
   levelIndex = 0;
+
+  // Array of tiles in the order they were put on the board.
+  private undoBuffer: Array<TypedPosition>;
 
   constructor(
       private readonly inventoryService: InventoryService,
@@ -136,10 +135,13 @@ export class BoardComponent {
     }
 
     // setup steam engines
-    this.board.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset, 2);
-    this.board.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset + this.width - 1, 2);
+    this.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset, 2);
+    this.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset + this.width - 1, 2);
 
-    this.board.placeTile({type: TileType.BLOCKED}, 14, 2);
+    this.placeTile({type: TileType.BLOCKED}, 14, 2);
+
+    // reset undo buffer
+    this.undoBuffer = []
 
     this.startMessages(level.messages);
   }
@@ -170,7 +172,8 @@ export class BoardComponent {
 
   onClick() {
     if (this.placeholder !== undefined && this.placeholder.placeable) {
-      this.board.placeTile(this.placeholder.tile, this.placeholder.boardX, this.placeholder.boardY);
+      this.placeTilePlayer(this.placeholder.tile, this.placeholder.boardX, this.placeholder.boardY, this.placeholder.inventoryTile);
+      this.placeholder.placeable = false;
       this.inventoryService.reduceTile(this.placeholder.inventoryTile);
       const level = LEVELS[this.levelIndex];
       const context: GameContext = {  // << move this to a separate method
@@ -219,7 +222,12 @@ export class BoardComponent {
   }
 
   undo() {
-
+    this.soundService.play('button_click');
+    if (this.undoBuffer.length == 0) return;
+    var lastTile = this.undoBuffer[this.undoBuffer.length - 1]
+    this.removeTile(lastTile.pos.x, lastTile.pos.y);
+    this.inventoryService.increaseTile(lastTile.inventoryTile);
+    this.undoBuffer.splice(-1, 1);
   }
 
   messages: string[][] = [];
@@ -240,6 +248,36 @@ export class BoardComponent {
       }
     };
     timeable(messages, this.levelIndex, 0, 0);
+  }
+
+
+  private placeTilePlayer(tile: Tile, x: number, y: number, tileType: InventoryTileType) {
+    this.placeTile(tile, x, y)
+    this.undoBuffer.push(
+      {pos: {x: x,
+             y: y},
+       inventoryTile: tileType})
+  }
+
+  private placeTile(tile: Tile, x: number, y: number) {
+    if (!this.board.placeTile(tile, x, y)) return;
+    this.updateTiles();
+  }
+
+  private removeTile(x: number, y: number) {
+    this.board.removeTile(x, y);
+    this.updateTiles();
+  }
+
+  private updateTiles() {
+    const tiles = this.board.getTiles(this.boardOffset - this.width, this.boardOffset + this.width);
+    const convert = (e => {
+      return {
+        tile: e.tile,
+        style: {left: `${e.x * BLOCK_SIZE}px`, top: `${e.y * BLOCK_SIZE}px`}
+      }
+    });
+    this.placedTiles = tiles.map(convert);
   }
 }
 

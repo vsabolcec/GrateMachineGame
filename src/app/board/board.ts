@@ -18,15 +18,22 @@ export class Board {
     }
   }
 
-  placeTile(tile: Tile, x: number, y: number): void {
-    if (this.tiles[x][y] !== undefined) return;
+  placeTile(tile: Tile, x: number, y: number): boolean {
+    if (this.tiles[x][y] !== undefined) return false;
     // place tile
     this.tiles[x][y] = deepCopy(tile);
     // update connectivity
     this.updateConnectivity(tile, x, y);
+    return true;
   }
 
-
+  removeTile(x: number, y: number): void {
+    if (this.tiles[x][y] == undefined) return;
+    // place tile
+    this.tiles[x][y] = undefined;
+    // update connectivity
+    //this.updateConnectivity(tile, x, y);
+  }
 
   canPlaceTile(tile: Tile, x: number, y: number): boolean {
     if (this.tiles === undefined || this.tiles[x] === undefined)
@@ -46,7 +53,7 @@ export class Board {
         return false;
       }
     }
-    
+
     // onda ako bi mogli nesto...
     for (let i = 0; i < 4; ++i) {
       const otherTile = this.get(x + dx[i], y + dy[i]);
