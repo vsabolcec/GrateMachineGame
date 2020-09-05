@@ -15,6 +15,10 @@
             style="position: absolute;">
       </tile>
 
+      <div class="steam-wrapper" *ngFor="let steam of steamParts" [ngStyle]="steam.style">
+        <div class="steam" [ngClass]="['steam-' + steam.side]"></div>
+      </div>
+
       <tile *ngIf="placeholder !== undefined"
             class="placeholder"
             [tile]="placeholder.tile"

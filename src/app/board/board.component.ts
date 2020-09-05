@@ -38,6 +38,11 @@ interface PlacedTile {
   style: { left: string, top: string }
 }
 
+interface SteamPart {
+  side: number,
+  style: { left: string, top: string }
+}
+
 @Component({
   selector: 'board',
   templateUrl: './board.component.html',
@@ -60,6 +65,8 @@ export class BoardComponent {
   placeholder?: Placeholder = undefined;
 
   placedTiles: PlacedTile[] = [];
+
+  steamParts: SteamPart[] = [];
 
   // Last mouse position
   private mouseBoardPos: { x: number, y: number };
@@ -295,6 +302,14 @@ export class BoardComponent {
       }
     });
     this.placedTiles = tiles.map(convert);
+
+    const steam = this.board.getSteam(this.boardOffset, this.boardOffset + this.width);
+    this.steamParts = steam.map(e => {
+      return {
+        side: e.side,
+        style: {left: `${e.x * BLOCK_SIZE}px`, top: `${e.y * BLOCK_SIZE}px`}
+      };
+    });
   }
 }
 

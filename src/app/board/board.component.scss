@@ -35,6 +35,52 @@
   }
 }
 
+.steam-wrapper {
+  position: absolute;
+  opacity: 0.6;
+
+  .steam {
+    position: absolute;
+    image-rendering: pixelated;
+
+    &.steam-0 {
+      left: -50px;
+      top: 24px;
+      width: 48px;
+      height: 16px;
+      background-image: url('../../assets/steam/steam-left-loop.gif');
+      background-size: 48px 16px;
+    }
+
+    &.steam-1 {
+      left: 24px;
+      width: 16px;
+      height: 48px;
+      top: -50px;
+      background-image: url('../../assets/steam/steam-top-loop.gif');
+      background-size: 16px 48px;
+    }
+
+    &.steam-2 {
+      left: 66px;
+      top: 24px;
+      width: 48px;
+      height: 16px;
+      background-image: url('../../assets/steam/steam-right-loop.gif');
+      background-size: 48px 16px;
+    }
+
+    &.steam-3 {
+      left: 24px;
+      top: 66px;
+      width: 16px;
+      height: 48px;
+      background-image: url('../../assets/steam/steam-bottom-loop.gif');
+      background-size: 16px 48px;
+    }
+  }
+}
+
 .smoke {
   position: absolute;
   width: 16px;

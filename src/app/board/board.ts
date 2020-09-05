@@ -96,6 +96,26 @@ export class Board {
     return tiles;
   }
 
+  getSteam(fromX: number, toX: number): Array<{x: number, y: number, side: number}> {
+    const steam = [];
+    const dx = [-1, 0, 1, 0];
+    const dy = [0, -1, 0, 1];
+    for (let x = fromX; x < toX; ++x) {
+      for (let y = 0; y < this.height; ++y) {
+        const tile = this.get(x, y);
+        if (tile === undefined || tile.type != TileType.PIPES) continue;
+        for (let side = 0; side < 4; ++side) {
+          const otherTile = this.get(x + dx[side], y + dy[side]);
+          const otherSide = (side + 2) % 4;
+          if (otherTile === undefined && tile.layout[side] > 0) {
+            steam.push({x, y, side});
+          }
+        }
+      }
+    }
+    return steam;
+  }
+
   countConnections(x: number, y: number): number {
     const dx = [1, 0, -1, 0];
     const dy = [0, 1, 0, -1];
