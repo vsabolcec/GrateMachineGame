@@ -12,6 +12,8 @@ export class StartMenuComponent {
   constructor(private readonly statesService: StatesService,
               private readonly soundService: SoundService) {
     soundService.set('button_click', new Audio("../../assets/sound/button_click.wav"));
+    soundService.set('pipe_placement', new Audio("../../assets/sound/pipe_placement.wav"));
+    soundService.set('engine_starting', new Audio("../../assets/sound/engine_starting.wav"));
   }
   
   get started(): boolean {

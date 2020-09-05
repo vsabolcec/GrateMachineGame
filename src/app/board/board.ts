@@ -7,6 +7,14 @@ export class Board {
   private modifiers: Array<Array<number>> = [];
   private graph: Graph = new Graph();
 
+  /// engine playing...
+  private shouldPlayEngine_: boolean = false;
+  get shouldPlayEngine() {
+    const value = this.shouldPlayEngine_;
+    this.shouldPlayEngine_ = false;
+    return value;
+  }
+
   constructor(public width: number, public height: number) {
     for (let i = 0; i < 100 * width; ++i) {
       this.tiles.push(new Array(height));
@@ -123,8 +131,13 @@ export class Board {
     for (let i = 0; i < 4; ++i) {
       const otherTile = this.get(x + dx[i], y + dy[i]);
       const otherSide = (side[i] + 2) % 4;
+      const before = checkMachineTile(otherTile);
       checkHelpers(tile, otherTile, side[i], otherSide);
       checkHelpers(otherTile, tile, otherSide, side[i]);
+      const after = checkMachineTile(otherTile);
+      if (after !== undefined && before !== undefined && before === 0 && after > 0) {
+        this.shouldPlayEngine_ = true;
+      }
     }
   }
 }
@@ -153,4 +166,12 @@ function checkHelpers(tile1, tile2, side1, side2) {
 function hasHelpers(tile: Tile): boolean {
   if (tile === undefined) return false;
   return tile.type === TileType.GRATE_MACHINE || tile.type === TileType.STEAM_ENGINE;
+}
+
+function checkMachineTile(tile: Tile): number | undefined {
+  if (tile === undefined || tile.type !== TileType.GRATE_MACHINE) return undefined;
+  if (tile.helpers === undefined) return 0;
+  let sum = 0;
+  for (const value of tile.helpers) sum += value;
+  return sum;
 }

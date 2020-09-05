@@ -3,12 +3,12 @@
     <h1>Options</h1>
     <div class="item">
         <p>Sound volume</p>
-        <input [(ngModel)]="soundVolume" (mouseup)="testSoundVolume()" class="slider" min="0" max="100" value="100" type="range">
+        <input [(ngModel)]="soundVolume" (mouseup)="testSoundVolume()" class="slider" min="0" max="100" value="100" step="5" type="range">
         <p>{{ soundVolume }}</p>
     </div>
     <div class="item">
         <p>Music volume</p>
-        <input [(ngModel)]="musicVolume" class="slider" min="0" max="100" value="100" type="range">
+        <input [(ngModel)]="musicVolume" class="slider" min="0" max="100" value="100" step="5" type="range">
         <p>{{ musicVolume }}</p>
     </div>
 

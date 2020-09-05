@@ -27,8 +27,8 @@ export class AppComponent {
         }, 50);
       }
     });
-    //musicService.music = new Audio("../assets/sound/button_click.wav");
-    //musicService.play();
+    musicService.music = new Audio("../assets/sound/background.wav");
+    musicService.play();
     //^play background music here^
   }
 

@@ -42,7 +42,7 @@ export class MusicService {
     localStorage.setItem("music_volume", newVolume.toString());
     this.volume_ = newVolume;
     if(this.music)
-      this.music.volume = this.volume;
+      this.music.volume = this.volume / 100;
   }
 
   public resetVolume(): void {

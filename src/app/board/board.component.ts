@@ -263,11 +263,17 @@ export class BoardComponent {
 
 
   private placeTilePlayer(tile: Tile, x: number, y: number, tileType: InventoryTileType) {
-    this.placeTile(tile, x, y)
+    this.placeTile(tile, x, y);
     this.undoBuffer.push(
       {pos: {x: x,
              y: y},
-       inventoryTile: tileType})
+       inventoryTile: tileType});
+    if (tile.type === TileType.PIPES) {
+      this.soundService.play('pipe_placement');
+    }
+    if (this.board.shouldPlayEngine) {
+      this.soundService.play('engine_starting');
+    }
   }
 
   private placeTile(tile: Tile, x: number, y: number) {
