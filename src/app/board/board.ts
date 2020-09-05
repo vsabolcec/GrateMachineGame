@@ -24,6 +24,8 @@ export class Board {
     this.tiles[x][y] = deepCopy(tile);
     // update connectivity
     this.updateConnectivity(tile, x, y);
+    // update helpers (e.g. for steam engine and grate machine)
+    this.updateHelpers(this.tiles[x][y], x, y);
     return true;
   }
 
@@ -33,6 +35,8 @@ export class Board {
     this.tiles[x][y] = undefined;
     // update connectivity
     //this.updateConnectivity(tile, x, y);
+    // update helpers
+    this.updateHelpers(this.tiles[x][y], x, y);
   }
 
   canPlaceTile(tile: Tile, x: number, y: number): boolean {
@@ -112,6 +116,18 @@ export class Board {
       }
     }
   }
+
+  private updateHelpers(tile: Tile, x: number, y: number) {
+    const dx = [1, 0, -1, 0];
+    const dy = [0, 1, 0, -1];
+    const side = [2, 3, 0, 1];
+    for (let i = 0; i < 4; ++i) {
+      const otherTile = this.get(x + dx[i], y + dy[i]);
+      const otherSide = (side[i] + 2) % 4;
+      checkHelpers(tile, otherTile, side[i], otherSide);
+      checkHelpers(otherTile, tile, otherSide, side[i]);
+    }
+  }
 }
 
 function hasPipe(tile: Tile, side: number): boolean {
@@ -119,4 +135,23 @@ function hasPipe(tile: Tile, side: number): boolean {
   if (tile.type === TileType.BLOCKED) return false;
   if (tile.type !== TileType.PIPES) return true;
   return tile.layout[side] > 0;
+}
+
+function checkHelpers(tile1, tile2, side1, side2) {
+  if (!hasHelpers(tile1)) return;
+  if (tile1.helpers === undefined) tile1.helpers = [0, 0, 0, 0];
+  if (tile2 === undefined || tile2.type !== TileType.PIPES) {
+    tile1.helpers[side1] = 0;
+    return
+  }
+  if (tile2.layout[side2] === 0) {
+    tile1.helpers[side1] = 0;
+    return;
+  }
+  tile1.helpers[side1] = 1;
+}
+
+function hasHelpers(tile: Tile): boolean {
+  if (tile === undefined) return false;
+  return tile.type === TileType.GRATE_MACHINE || tile.type === TileType.STEAM_ENGINE;
 }

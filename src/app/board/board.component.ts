@@ -139,6 +139,7 @@ export class BoardComponent {
     this.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset + this.width - 1, 2);
 
     this.placeTile({type: TileType.BLOCKED}, 14, 2);
+    this.placeTile({type: TileType.GRATE_MACHINE}, 4, 2);
 
     // reset undo buffer
     this.undoBuffer = []
@@ -186,6 +187,8 @@ export class BoardComponent {
       if (level.completed(context)) {
         this.setLevel(this.levelIndex + 1);
       }
+
+      console.log(this.placedTiles);
     }
   }
 

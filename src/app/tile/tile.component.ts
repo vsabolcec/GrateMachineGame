@@ -14,11 +14,13 @@ export interface PipesTile {
 }
 
 export interface GrateMachineTile {
-  type: TileType.GRATE_MACHINE
+  type: TileType.GRATE_MACHINE,
+  helpers?: Array<number>
 }
 
 export interface SteamEngineTile {
-  type: TileType.STEAM_ENGINE
+  type: TileType.STEAM_ENGINE,
+  helpers?: Array<number>
 }
 
 export interface BlockedTile {
@@ -52,8 +54,16 @@ export class TileComponent implements OnInit {
       this.tileClasses.push('tile-pipes-' + this.tile.layout.join(''));
     } else if (this.tile.type == TileType.STEAM_ENGINE) {
       this.tileClasses = ['tile-steam'];
+      if (this.tile.helpers !== undefined) {
+        this.tileClasses.push('tile-steam-' + this.tile.helpers.join(''));
+      }
     } else if (this.tile.type == TileType.BLOCKED) {
       this.tileClasses = ['tile-blocked'];
+    } else if (this.tile.type == TileType.GRATE_MACHINE) {
+      this.tileClasses = ['tile-machine'];
+      if (this.tile.helpers !== undefined) {
+        this.tileClasses.push('tile-machine-' + this.tile.helpers.join(''));
+      }
     }
     // etc..
   }
