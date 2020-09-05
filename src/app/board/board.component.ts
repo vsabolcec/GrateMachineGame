@@ -59,16 +59,7 @@ export class BoardComponent {
 
   placeholder?: Placeholder = undefined;
 
-  get placedTiles(): PlacedTile[] {
-    const tiles = this.board.getTiles(this.boardOffset - this.width, this.boardOffset + this.width);
-    const convert = (e => {
-      return {
-        tile: e.tile,
-        style: {left: `${e.x * BLOCK_SIZE}px`, top: `${e.y * BLOCK_SIZE}px`}
-      }
-    });
-    return tiles.map(convert);
-  }
+  placedTiles: PlacedTile[] = [];
 
   // Last mouse position
   private mouseBoardPos: { x: number, y: number };
@@ -144,10 +135,10 @@ export class BoardComponent {
     }
 
     // setup steam engines
-    this.board.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset, 2);
-    this.board.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset + this.width - 1, 2);
+    this.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset, 2);
+    this.placeTile({type: TileType.STEAM_ENGINE}, this.boardOffset + this.width - 1, 2);
 
-    this.board.placeTile({type: TileType.BLOCKED}, 14, 2);
+    this.placeTile({type: TileType.BLOCKED}, 14, 2);
 
     // reset undo buffer
     this.undoBuffer = []
@@ -185,7 +176,8 @@ export class BoardComponent {
         {pos: {x: this.placeholder.boardX,
                y: this.placeholder.boardY},
          inventoryTile: this.placeholder.inventoryTile})
-      this.board.placeTile(this.placeholder.tile, this.placeholder.boardX, this.placeholder.boardY);
+      this.placeTile(this.placeholder.tile, this.placeholder.boardX, this.placeholder.boardY);
+      this.placeholder.placeable = false;
       this.inventoryService.reduceTile(this.placeholder.inventoryTile);
       const level = LEVELS[this.levelIndex];
       const context: GameContext = {  // << move this to a separate method
@@ -260,6 +252,19 @@ export class BoardComponent {
       }
     };
     timeable(messages, this.levelIndex, 0, 0);
+  }
+
+
+  private placeTile(tile: Tile, x: number, y: number) {
+    if (!this.board.placeTile(tile, x, y)) return;
+    const tiles = this.board.getTiles(this.boardOffset - this.width, this.boardOffset + this.width);
+    const convert = (e => {
+      return {
+        tile: e.tile,
+        style: {left: `${e.x * BLOCK_SIZE}px`, top: `${e.y * BLOCK_SIZE}px`}
+      }
+    });
+    this.placedTiles = tiles.map(convert);
   }
 }
 
