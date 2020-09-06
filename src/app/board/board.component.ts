@@ -221,17 +221,20 @@ export class BoardComponent {
     if (!this.placeholder) return;
     if (event.key == 'q' || event.key == 'Q') {
       this.placeholder.tile = rotateTile(this.placeholder.tile);
+      this.updatePlaceholder();
     }
     if (event.key == 'e' || event.key == 'E' || event.key == 'r' || event.key == 'R') {
       this.placeholder.tile = rotateTile(this.placeholder.tile);
       this.placeholder.tile = rotateTile(this.placeholder.tile);
       this.placeholder.tile = rotateTile(this.placeholder.tile);
+      this.updatePlaceholder();
     }
     if (event.key == '1' || event.key == '2' || event.key == '3') {
       this.updatePlaceholder();
     }
     if (event.key == 'u' || event.key == 'U') {
       this.undo();
+      this.updatePlaceholder();
     }
   }
 

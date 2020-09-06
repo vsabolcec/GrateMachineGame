@@ -27,6 +27,7 @@ export const INVENTORY_CONSTS = {
 export class InventoryComponent {
   inventory: InventoryTiles;
   active: InventoryTileType;
+  InventoryTileType = InventoryTileType;
 
   // export to template
   INVENTORY_CONSTS = INVENTORY_CONSTS;
@@ -45,30 +46,26 @@ export class InventoryComponent {
   }
 
   setActive(inventoryTileType: InventoryTileType) {
+    if (inventoryTileType == 'STRAIGHT_PIPE' && this.inventory.straightPipes <= 0)
+      return;
+    if (inventoryTileType == 'TURN_PIPE' && this.inventory.turnPipes <= 0)
+      return;
+    if (inventoryTileType == 'PLUS_PIPES' && this.inventory.plusPipes <= 0)
+      return;
     this.active = inventoryTileType;
     this.inventoryService.changeDomino(inventoryTileType);
   }
 
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    var order = []
-    if (this.inventory.straightPipes > 0) {
-      order.push('STRAIGHT_PIPE');
+    if (event.key == '1') {
+      this.setActive(InventoryTileType.STRAIGHT_PIPE);
     }
-    if (this.inventory.turnPipes > 0) {
-      order.push('TURN_PIPE');
+    if (event.key == '2') {
+      this.setActive(InventoryTileType.TURN_PIPE);
     }
-    if (this.inventory.plusPipes > 0) {
-      order.push('PLUS_PIPES');
-    }
-    if (event.key == '1' && order.length > 0) {
-      this.setActive(order[0]);
-    }
-    if (event.key == '2' && order.length > 1) {
-      this.setActive(order[1]);
-    }
-    if (event.key == '3' && order.length > 2) {
-      this.setActive(order[2]);
+    if (event.key == '3') {
+      this.setActive(InventoryTileType.PLUS_PIPES);
     }
   }
 

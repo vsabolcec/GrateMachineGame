@@ -55,8 +55,8 @@ export const LEVELS: Level[] = [
     completed: defaultComplete
   },
   // ovaj bi se mogel nazvat difficult, al nisam provjeril jer ne radi algoritam :/
-  { 
-    startingBonus: { straightPipes: 7, turnPipes: 7 },
+  {
+    startingBonus: { straightPipes: 7, turnPipes: 7, plusPipes: 0 },
     messages: [],
     blockedFields: [
       '0000001000',
@@ -70,7 +70,7 @@ export const LEVELS: Level[] = [
   },
    // ovo je jedan laksi s plus pipeovima (isto trenutno ne radi zbog algoritma)
    {
-    startingBonus: { straightPipes: 6, plusPipes: 2 },
+    startingBonus: { straightPipes: 6, turnPipes: 0, plusPipes: 2 },
     messages: [],
     blockedFields: [
       '0000000000',
@@ -110,17 +110,17 @@ export const LEVELS: Level[] = [
     grateMachines: [ { x: 1, y: 0 }, { x: 5, y: 4 } ],
     completed: defaultComplete
   },
- 
+
   // + loop level
   {
-    startingBonus: { straightPipes: 14, plusPipes: 1, turnPipes: 2 },
+    startingBonus: { straightPipes: 14, turnPipes: 2, plusPipes: 1 },
     messages: [],
     grateMachines: [ { x: 3, y: 0 }, { x: 6, y: 0 }, { x: 3, y: 4 }, { x: 6, y: 4 } ],
     completed: defaultComplete
   },
   // level 1
   {
-    startingBonus: { straightPipes: 8, plusPipes: 8, turnPipes: 8 },
+    startingBonus: { straightPipes: 8, turnPipes: 8, plusPipes: 8 },
     messages: [
       "Hi there! We're about to make a very great grate machine!",
       "But first, we'll start with some infrastructure. I acquired 8 straight pipes - use them to make a connection between two parts of steam engine!"
@@ -129,7 +129,7 @@ export const LEVELS: Level[] = [
   },
   // level 2
   {
-    startingBonus: { straightPipes: 6, turnPipes: 4 },
+    startingBonus: { straightPipes: 6, turnPipes: 4, plusPipes: 0 },
     messages: [
       "Well done!",
       "We'll continue with the infrastructure. I couldn't find much straight pipes this time, but I hope you can get use of these turn pipes as well!"
@@ -138,7 +138,7 @@ export const LEVELS: Level[] = [
   },
   // level 3
   {
-    startingBonus: { turnPipes: 16 },
+    startingBonus: { straightPipes: 0, turnPipes: 16, plusPipes: 0 },
     blockedFields: [
       '0000000000',
       '0000000010',
@@ -154,7 +154,7 @@ export const LEVELS: Level[] = [
   },
   // level 4
   {
-    startingBonus: { straightPipes: 8, turnPipes: 3 },
+    startingBonus: { straightPipes: 8, turnPipes: 3, plusPipes: 0 },
     grateMachines: [ {x: 6, y: 0} ],
     messages: [
       "OK, if I've spent all money on the pipes!",
@@ -164,7 +164,7 @@ export const LEVELS: Level[] = [
   },
   // game completed
   {
-    startingBonus: { },
+    startingBonus: { straightPipes: 0, turnPipes: 0, plusPipes: 0 },
     messages: [
       "Seems like you have completed all of the levels!",
       "Thank you for playing the game."
