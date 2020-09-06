@@ -17,7 +17,7 @@
 
 .board {
   position: relative;
-  width: 6400px;
+  width: 12800px;
   transition: margin 600ms;
   background-image: url('../../assets/tile-empty.png');
   background-size: 64px 64px;
@@ -110,14 +110,21 @@
 #score-counter {
   position: absolute;
   left: 50%;
-  width: 180px;
-  margin-left: 134px;
-  top: 98px;
+  width: 100px;
+  margin-left: 350px;
+  top: 28px;
   font-family: "VCR_OSD_MONO";
   color: rgba(222, 222, 222, 0.75);
-  font-size: 18px;
+  font-size: 20px;
   padding: 0px;
-  text-align: right;
+  line-height: 48px;
+}
+
+#score-counter img {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  float: left;
 }
 
 .messages {

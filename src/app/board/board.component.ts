@@ -208,7 +208,8 @@ export class BoardComponent {
         gratesTotal: 0,
         board: this.board,
         fromX: this.boardOffset,
-        toX: this.boardOffset + this.width - 1
+        toX: this.boardOffset + this.width - 1,
+        level
       };
       if (level.completed(context)) {
         this.setLevel(this.levelIndex + 1);
