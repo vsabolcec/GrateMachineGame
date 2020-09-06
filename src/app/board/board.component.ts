@@ -219,10 +219,10 @@ export class BoardComponent {
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
     if (!this.placeholder) return;
-    if (event.key == 'q' || event.key == 'Q' || event.key == 'r' || event.key == 'R') {
+    if (event.key == 'q' || event.key == 'Q') {
       this.placeholder.tile = rotateTile(this.placeholder.tile);
     }
-    if (event.key == 'e' || event.key == 'E') {
+    if (event.key == 'e' || event.key == 'E' || event.key == 'r' || event.key == 'R') {
       this.placeholder.tile = rotateTile(this.placeholder.tile);
       this.placeholder.tile = rotateTile(this.placeholder.tile);
       this.placeholder.tile = rotateTile(this.placeholder.tile);
