@@ -1,13 +1,5 @@
 import { Board } from '../board/board';
 
-export interface GameContext {
-  gratesTotal: number;  // koliko sam generirao ukupno
-  gratesRound: number;  // koliko sam generirao u ovoj rundi
-  fromX: number;
-  toX: number;
-  board: Board;
-}
-
 export enum InventoryTileType {
   STRAIGHT_PIPE = 'STRAIGHT_PIPE',
   TURN_PIPE = 'TURN_PIPE',
@@ -33,10 +25,29 @@ export interface Level {
   grateMachines?: Array<{x: number, y: number}>;
 }
 
+
+export interface GameContext {
+  gratesTotal: number;  // koliko sam generirao ukupno
+  gratesRound: number;  // koliko sam generirao u ovoj rundi
+  fromX: number;
+  toX: number;
+  board: Board;
+  level: Level;
+}
+
 const MIDDLE_HEIGHT = 2;
 
 const defaultComplete =
-    (context: GameContext) => context.board.isConnected(context.toX, MIDDLE_HEIGHT, context.fromX, MIDDLE_HEIGHT);
+    (context: GameContext) => {
+  if (!context.board.isOnStack(context.toX, MIDDLE_HEIGHT)) return false;
+  if (context.level.grateMachines !== undefined) {
+    for (const machine of context.level.grateMachines) {
+      if (!context.board.isOnStack(machine.x, machine.y))
+        return false;
+    }
+  }
+  return true;
+};
 
 
 export const LEVELS: Level[] = [

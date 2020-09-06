@@ -188,7 +188,7 @@ export class Board {
 
   }
 
-  private isOnStack(x: number, y: number): boolean {
+  isOnStack(x: number, y: number): boolean {
     return this.get(x, y) !== undefined && this.stack.contains(x, y);
   }
 
