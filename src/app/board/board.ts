@@ -7,6 +7,9 @@ export class Board {
   private modifiers: Array<Array<number>> = [];
   private graph: Graph = new Graph();
 
+  private stack: Array<{x: number, y: number}> = [{x: 0, y: 2}];
+  private history: Array<number> = [];
+
   /// engine playing...
   private shouldPlayEngine_: boolean = false;
   get shouldPlayEngine() {
@@ -34,6 +37,14 @@ export class Board {
     this.updateConnectivity(tile, x, y);
     // update helpers (e.g. for steam engine and grate machine)
     this.updateHelpers(this.tiles[x][y], x, y);
+
+    /// player je stavio
+    if (tile.type === TileType.PIPES) {
+      this.stack.push({x, y});
+      this.history.push(1);
+      this.checkStack();
+    }
+
     return true;
   }
 
@@ -45,9 +56,53 @@ export class Board {
     //this.updateConnectivity(tile, x, y);
     // update helpers
     this.updateHelpers(this.tiles[x][y], x, y);
+    this.removeHistory();
   }
 
   canPlaceTile(tile: Tile, x: number, y: number): boolean {
+    if (this.tiles === undefined || this.tiles[x] === undefined)
+      return false;
+    if (this.tiles[x][y] !== undefined) return false;
+    const dx = [1, 0, -1, 0];
+    const dy = [0, 1, 0, -1];
+    const side = [2, 3, 0, 1];
+    // prvo ako bas stvarno ne mozemo nesto
+    for (let i = 0; i < 4; ++i) {
+      const otherTile = this.get(x + dx[i], y + dy[i]);
+      const otherSide = (side[i] + 2) % 4;
+      if (otherTile === undefined) continue;
+      if (tile.type === TileType.PIPES && tile.layout[side[i]] > 0 &&
+          otherTile.type === TileType.BLOCKED) {
+        return false;
+      }
+      if (tile.type === TileType.PIPES && tile.layout[side[i]] > 0 &&
+          otherTile.type === TileType.PIPES && otherTile.layout[otherSide] === 0) {
+        return false;
+      }
+      if (tile.type === TileType.PIPES && tile.layout[side[i]] > 0 &&
+          otherTile.type === TileType.PIPES && otherTile.layout[otherSide] === 0) {
+        return false;
+      }
+    }
+    const stackTop = this.stack[this.stack.length - 1];
+    if (Math.abs(stackTop.x - x) + Math.abs(stackTop.y - y) !== 1) return false;
+    const stackTopTile = this.get(stackTop.x, stackTop.y);
+    if (isPlusTile(stackTopTile)) {
+      const prevStackTop = this.stack[this.stack.length - 2];
+      return (x - stackTop.x === stackTop.x - prevStackTop.x) &&
+             (y - stackTop.y === stackTop.y - prevStackTop.y);
+    }
+    for (let i = 0; i < 4; ++i) {
+      const otherTile = this.get(x + dx[i], y + dy[i]);
+      const otherSide = (side[i] + 2) % 4;
+      if (otherTile === undefined) continue;
+      if (hasPipe(tile, side[i]) && hasPipe(otherTile, otherSide)) {
+        return true;
+      }
+    }
+    return false;
+
+/*
     if (this.tiles === undefined || this.tiles[x] === undefined)
       return false;
     if (this.tiles[x][y] !== undefined) return false;
@@ -74,7 +129,7 @@ export class Board {
         return true;
       }
     }
-    return false;
+    return false;*/
   }
 
   get(x: number, y: number): Tile | undefined {
@@ -160,6 +215,33 @@ export class Board {
       }
     }
   }
+
+  private checkStack() {
+    const stackTop = this.stack[this.stack.length - 1];
+    const prevStackTop = this.stack[this.stack.length - 2];
+    const dx = [-1, 0, 1, 0];
+    const dy = [0, -1, 0, 1];
+    for (let side = 0; side < 4; ++side) {
+      const nx = stackTop.x + dx[side];
+      const ny = stackTop.y + dy[side];
+      if (nx === prevStackTop.x && ny === prevStackTop.y) continue;
+      const otherTile = this.get(nx, ny);
+      if (otherTile === undefined) continue;
+      if (otherTile.type === TileType.GRATE_MACHINE || otherTile.type === TileType.STEAM_ENGINE) {
+        this.stack.push({x: nx, y: ny});
+        this.history[this.history.length - 1]++;
+      }
+    }
+  }
+
+  private removeHistory() {
+    if (this.history.length === 0) return;
+    const times = this.history[this.history.length - 1];
+    for (let i = 0; i < times; ++i) {
+      this.stack.pop();
+    }
+    this.history.pop();
+  }
 }
 
 function hasPipe(tile: Tile, side: number): boolean {
@@ -194,4 +276,9 @@ function checkMachineTile(tile: Tile): number | undefined {
   let sum = 0;
   for (const value of tile.helpers) sum += value;
   return sum;
+}
+
+function isPlusTile(tile: Tile): boolean {
+  if (tile.type !== TileType.PIPES) return false;
+  return tile.layout[0] + tile.layout[1] + tile.layout[2] + tile.layout[3] === 4;
 }
