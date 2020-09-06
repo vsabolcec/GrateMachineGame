@@ -39,11 +39,14 @@ const MIDDLE_HEIGHT = 2;
 
 const defaultComplete =
     (context: GameContext) => {
-  if (!context.board.isOnStack(context.toX, MIDDLE_HEIGHT)) return false;
+  if (!context.board.isOnStack(context.toX, MIDDLE_HEIGHT)) {
+    return false;
+  }
   if (context.level.grateMachines !== undefined) {
     for (const machine of context.level.grateMachines) {
-      if (!context.board.isOnStack(machine.x, machine.y))
+      if (!context.board.isOnStack(context.fromX + machine.x, machine.y)) {
         return false;
+      }
     }
   }
   return true;
