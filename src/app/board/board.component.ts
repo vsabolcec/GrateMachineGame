@@ -337,6 +337,9 @@ function fromInventoryTile(inventoryTile: InventoryTileType): Tile | undefined {
   if (inventoryTile === InventoryTileType.TURN_PIPE) {
     return deepCopy(INVENTORY_CONSTS.TURN_PIPE_TILE);
   }
+  if (inventoryTile === InventoryTileType.PLUS_PIPES) {
+    return deepCopy(INVENTORY_CONSTS.PLUS_PIPE_TILE);
+  }
   console.log('fromInventoryTile: should NOT reach this line');
   return undefined;
 }

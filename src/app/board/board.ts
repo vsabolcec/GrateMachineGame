@@ -93,8 +93,18 @@ export class Board {
     const stackTopTile = this.get(stackTop.x, stackTop.y);
     if (isPlusTile(stackTopTile)) {
       const prevStackTop = this.stack[this.stack.length - 2];
-      return (x - stackTop.x === stackTop.x - prevStackTop.x) &&
-             (y - stackTop.y === stackTop.y - prevStackTop.y);
+      if (x - stackTop.x !== stackTop.x - prevStackTop.x ||
+          y - stackTop.y !== stackTop.y - prevStackTop.y) {
+        return false;
+      }
+    }
+    for (let i = 0; i < 4; ++i) {
+      const otherTile = this.get(x + dx[i], y + dy[i]);
+      const otherSide = (side[i] + 2) % 4;
+      if (otherTile === undefined) continue;
+      if (hasPipe(otherTile, otherSide) && !hasPipe(tile, side[i])) {
+        return false;
+      }
     }
     for (let i = 0; i < 4; ++i) {
       const otherTile = this.get(x + dx[i], y + dy[i]);
@@ -105,35 +115,6 @@ export class Board {
       }
     }
     return false;
-
-/*
-    if (this.tiles === undefined || this.tiles[x] === undefined)
-      return false;
-    if (this.tiles[x][y] !== undefined) return false;
-    const dx = [1, 0, -1, 0];
-    const dy = [0, 1, 0, -1];
-    const side = [2, 3, 0, 1];
-    // prvo ako bas stvarno ne mozemo nesto
-    for (let i = 0; i < 4; ++i) {
-      const otherTile = this.get(x + dx[i], y + dy[i]);
-      const otherSide = (side[i] + 2) % 4;
-      if (otherTile === undefined) continue;
-      if (tile.type === TileType.PIPES && tile.layout[side[i]] > 0 &&
-          otherTile.type === TileType.BLOCKED) {
-        return false;
-      }
-    }
-
-    // onda ako bi mogli nesto...
-    for (let i = 0; i < 4; ++i) {
-      const otherTile = this.get(x + dx[i], y + dy[i]);
-      const otherSide = (side[i] + 2) % 4;
-      if (otherTile === undefined) continue;
-      if (hasPipe(tile, side[i]) && hasPipe(otherTile, otherSide)) {
-        return true;
-      }
-    }
-    return false;*/
   }
 
   get(x: number, y: number): Tile | undefined {
@@ -166,13 +147,18 @@ export class Board {
         for (let side = 0; side < 4; ++side) {
           const otherTile = this.get(x + dx[side], y + dy[side]);
           const otherSide = (side + 2) % 4;
-          if (otherTile === undefined && tile.layout[side] > 0) {
-            steam.push({x, y, side});
-          }
+          if (otherTile !== undefined) continue;
+          if (tile.layout[side] === 0) continue;
+          if (isPlusTile(tile) && this.get(x - dx[side], y - dy[side]) === undefined) continue;
+          steam.push({x, y, side});
         }
       }
     }
     return steam;
+  }
+
+  isConnected(x1: number, y1: number, x2: number, y2: number): boolean {
+    return this.isOnPath(x1, y1) && this.isOnPath(x2, y2);
   }
 
   countConnections(x: number, y: number): number {
@@ -231,7 +217,8 @@ export class Board {
       if (nx === prevStackTop.x && ny === prevStackTop.y) continue;
       const otherTile = this.get(nx, ny);
       if (otherTile === undefined) continue;
-      if (otherTile.type === TileType.GRATE_MACHINE || otherTile.type === TileType.STEAM_ENGINE) {
+      if (otherTile.type === TileType.GRATE_MACHINE || otherTile.type === TileType.STEAM_ENGINE ||
+          isPlusTile(otherTile)) {
         this.stack.push({x: nx, y: ny});
         this.history[this.history.length - 1]++;
       }
@@ -245,6 +232,16 @@ export class Board {
       this.stack.pop();
     }
     this.history.pop();
+  }
+
+  private isOnPath(x: number, y: number): boolean {
+    let counter = 0;
+    for (let i = this.stack.length - 1; i >= 0; --i) {
+      if (counter++ > 80) return false;
+      if (this.stack[i].x === x && this.stack[i].y === y)
+        return true;
+    }
+    return false;
   }
 }
 

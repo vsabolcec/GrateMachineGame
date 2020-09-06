@@ -41,7 +41,7 @@ const defaultComplete =
 export const LEVELS: Level[] = [
   // level 1
   {
-    startingBonus: { straightPipes: 8 },
+    startingBonus: { straightPipes: 8, plusPipes: 8, turnPipes: 8 },
     messages: [
       "Hi there! We're about to make a very great grate machine!",
       "But first, we'll start with some infrastructure. I acquired 8 straight pipes - use them to make a connection between two parts of steam engine!"

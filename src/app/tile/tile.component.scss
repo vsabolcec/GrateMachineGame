@@ -23,7 +23,7 @@ $tile-size: #{$tile-scale * 32px};
     &.tile-pipes-0110 { background-image: url('../../assets/tiles/tile_0_1_1_0.png'); }
     &.tile-pipes-0011 { background-image: url('../../assets/tiles/tile_0_0_1_1.png'); }
     &.tile-pipes-1001 { background-image: url('../../assets/tiles/tile_1_0_0_1.png'); }
-    &.tile-pipes-1111 { background-image: url('../../assets/tiles/tile_2_0_2_0.png'); }
+    &.tile-pipes-1111 { background-image: url('../../assets/tiles/tile_1_1_1_1.png'); }
   }
   
   &.tile-blocked { background-image: url('../../assets/tile-blocked.png'); }

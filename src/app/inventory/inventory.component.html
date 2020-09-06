@@ -14,4 +14,12 @@
     <tile [tile]="INVENTORY_CONSTS.TURN_PIPE_TILE"></tile>
     <span class="count">{{ inventory.turnPipes }}</span>
   </div>
+
+  <div *ngIf="inventory?.plusPipes > 0"
+       class="inventory-tile"
+       [ngClass]="{'active': active === 'PLUS_PIPES'}"
+       (click)="setActive('PLUS_PIPES')">
+    <tile [tile]="INVENTORY_CONSTS.PLUS_PIPE_TILE"></tile>
+    <span class="count">{{ inventory.plusPipes }}</span>
+  </div>
 </div>
