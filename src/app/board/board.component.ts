@@ -80,6 +80,8 @@ export class BoardComponent {
 
   // Current score, updated from board
   score = 0;
+  PIPE_VALUE = 10;
+  GRATE_VALUE = 100;
 
   levelIndex = 0;
 
@@ -318,7 +320,20 @@ export class BoardComponent {
   }
 
   checkScore() {
-    this.score = this.board.score;
+    this.score = 0
+    for (var i = 0; i < this.width; i++) {
+      for (var j = 0; j < this.height; j++) {
+        if (this.board.isConnected(this.boardOffset + 0, 2, this.boardOffset + i, j)) {
+          var tile = this.board.get(this.boardOffset + i, j);
+          if (tile.type == TileType.PIPES) {
+            this.score += this.PIPE_VALUE;
+          }
+          if (tile.type == TileType.GRATE_MACHINE) {
+            this.score += this.GRATE_VALUE
+          }
+        }
+      }
+    }
   }
 }
 
