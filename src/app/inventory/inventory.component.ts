@@ -12,6 +12,10 @@ export const INVENTORY_CONSTS = {
   TURN_PIPE_TILE : {
     type: TileType.PIPES,
     layout: [1, 1, 0, 0]
+  },
+  PLUS_PIPE_TILE : {
+    type: TileType.PIPES,
+    layout: [1, 1, 1, 1]
   }
 };
 
@@ -26,18 +30,6 @@ export class InventoryComponent {
 
   // export to template
   INVENTORY_CONSTS = INVENTORY_CONSTS;
-
-  get tiles(): Tile[] {
-    if (this.inventory === undefined) return [];
-    const ret = [];
-    if (this.inventory.straightPipes && this.inventory.straightPipes > 0) {
-      ret.push({type: TileType.PIPES, layout: [1, 0, 1, 0]});
-    }
-    if (this.inventory.turnPipes && this.inventory.turnPipes > 0) {
-      ret.push({type: TileType.PIPES, layout: [1, 1, 0, 0]});
-    }
-    return ret;
-  }
 
   constructor(private readonly inventoryService: InventoryService) {
     this.inventoryService.bonusAcquired.subscribe((bonus: InventoryTiles) => {
@@ -67,6 +59,10 @@ export class InventoryComponent {
         this.inventory.turnPipes--;
         this.checkAndSetUndefined(this.inventory.turnPipes);
         return;
+      case InventoryTileType.PLUS_PIPES:
+        this.inventory.plusPipes--;
+        this.checkAndSetUndefined(this.inventory.plusPipes);
+        return;
       default:
         console.log('InventoryComp.reduce: should NOT reach this line');
     }
@@ -79,6 +75,9 @@ export class InventoryComponent {
         return;
       case InventoryTileType.TURN_PIPE:
         this.inventory.turnPipes++;
+        return;
+      case InventoryTileType.PLUS_PIPES:
+        this.inventory.plusPipes++;
         return;
       default:
         console.log('InventoryComp.increase: should NOT reach this line');
