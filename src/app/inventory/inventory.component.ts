@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Tile, TileType } from '../tile/tile.component';
 import { InventoryService } from '../inventory.service';
 import { InventoryTiles, InventoryTileType } from '../game/level';
@@ -47,6 +47,29 @@ export class InventoryComponent {
   setActive(inventoryTileType: InventoryTileType) {
     this.active = inventoryTileType;
     this.inventoryService.changeDomino(inventoryTileType);
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    var order = []
+    if (this.inventory.straightPipes > 0) {
+      order.push('STRAIGHT_PIPE');
+    }
+    if (this.inventory.turnPipes > 0) {
+      order.push('TURN_PIPE');
+    }
+    if (this.inventory.plusPipes > 0) {
+      order.push('PLUS_PIPES');
+    }
+    if (event.key == '1' && order.length > 0) {
+      this.setActive(order[0]);
+    }
+    if (event.key == '2' && order.length > 1) {
+      this.setActive(order[1]);
+    }
+    if (event.key == '3' && order.length > 2) {
+      this.setActive(order[2]);
+    }
   }
 
   private reduce(inventoryTile: InventoryTileType) {

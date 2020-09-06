@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, Input } from '@angular/core';
+import { Component, ElementRef, ViewChild, Input, HostListener } from '@angular/core';
 import { InventoryService } from '../inventory.service';
 import { Board } from './board';
 import { Tile, TileType } from '../tile/tile.component';
@@ -89,9 +89,9 @@ export class BoardComponent {
   private undoBuffer: Array<TypedPosition>;
 
   constructor(
-      private readonly inventoryService: InventoryService,
-      private readonly statesService: StatesService,
-      private readonly soundService: SoundService) {}
+    private readonly inventoryService: InventoryService,
+    private readonly statesService: StatesService,
+    private readonly soundService: SoundService) {}
 
   ngOnInit() {
     // Ensure we work with numbers!
@@ -213,6 +213,25 @@ export class BoardComponent {
       if (level.completed(context)) {
         this.setLevel(this.levelIndex + 1);
       }
+    }
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    if (!this.placeholder) return;
+    if (event.key == 'q' || event.key == 'Q' || event.key == 'r' || event.key == 'R') {
+      this.placeholder.tile = rotateTile(this.placeholder.tile);
+    }
+    if (event.key == 'e' || event.key == 'E') {
+      this.placeholder.tile = rotateTile(this.placeholder.tile);
+      this.placeholder.tile = rotateTile(this.placeholder.tile);
+      this.placeholder.tile = rotateTile(this.placeholder.tile);
+    }
+    if (event.key == '1' || event.key == '2' || event.key == '3') {
+      this.updatePlaceholder();
+    }
+    if (event.key == 'u' || event.key == 'U') {
+      this.undo();
     }
   }
 

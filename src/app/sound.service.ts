@@ -17,11 +17,11 @@ export class SoundService {
     }
   }
 
-  
+
   public set(key: string, value: HTMLAudioElement) {
     this.soundMap_[key] = value;
   }
-  
+
 
   public play(key: string): void {
     if(!this.soundMap_[key])

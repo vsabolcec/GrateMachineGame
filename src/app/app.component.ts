@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { State, StatesService } from './states.service';
 import { MusicService } from './music.service';
 import { SoundService } from './sound.service';
@@ -35,5 +35,12 @@ export class AppComponent {
   back() {
     this.statesService.changeState(State.START_MENU);
     this.soundService.play('button_click');
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    if (event.key == 'm' || event.key == 'M') {
+      this.musicService.toggleMuted();
+    }
   }
 }
