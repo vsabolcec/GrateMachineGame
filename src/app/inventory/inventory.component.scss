@@ -20,6 +20,9 @@
   &.active {
     outline: 4px solid #ddd;
   }
+  &.spent {
+    filter: brightness(50%);
+  }
   &:hover {
     outline: 4px solid #616394;
   }
