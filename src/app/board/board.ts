@@ -10,6 +10,10 @@ export class Board {
   private stack: Array<{x: number, y: number}> = [{x: 0, y: 2}];
   private history: Array<number> = [];
 
+  score = 0;
+  PIPE_VALUE = 10;
+  ENGINE_VALUE = 100;
+
   /// engine playing...
   private shouldPlayEngine_: boolean = false;
   get shouldPlayEngine() {

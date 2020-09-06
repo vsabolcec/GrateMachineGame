@@ -78,6 +78,9 @@ export class BoardComponent {
   // should trigger offset increment
   private targetPos: Position;
 
+  // Current score, updated from board
+  score = 0;
+
   levelIndex = 0;
 
   // Array of tiles in the order they were put on the board.
@@ -294,6 +297,8 @@ export class BoardComponent {
   }
 
   private updateTiles() {
+    this.checkScore()
+
     const tiles = this.board.getTiles(this.boardOffset - this.width, this.boardOffset + this.width);
     const convert = (e => {
       return {
@@ -310,6 +315,10 @@ export class BoardComponent {
         style: {left: `${e.x * BLOCK_SIZE}px`, top: `${e.y * BLOCK_SIZE}px`}
       };
     });
+  }
+
+  checkScore() {
+    this.score = this.board.score;
   }
 }
 

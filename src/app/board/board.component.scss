@@ -107,6 +107,19 @@
   top: 2px;
 }
 
+#score-counter {
+  position: absolute;
+  left: 50%;
+  width: 180px;
+  margin-left: 134px;
+  top: 98px;
+  font-family: "VCR_OSD_MONO";
+  color: rgba(222, 222, 222, 0.75);
+  font-size: 18px;
+  padding: 0px;
+  text-align: right;
+}
+
 .messages {
   position: absolute;
   top: 480px;
