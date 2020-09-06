@@ -56,7 +56,7 @@ const defaultComplete =
 export const LEVELS: Level[] = [
   // level 1
   {
-    startingBonus: { straightPipes: 8 },
+    startingBonus: { straightPipes: 8, turnPipes: 0, plusPipes: 0 },
     messages: [
       "Hi there! We're about to make a very great grate machine!",
       "But first, we'll start with some infrastructure. I acquired 8 straight pipes - use them to make a connection between two steam machines!"
@@ -65,7 +65,7 @@ export const LEVELS: Level[] = [
   },
   // level 2
   {
-    startingBonus: { straightPipes: 6, turnPipes: 4 },
+    startingBonus: { straightPipes: 6, turnPipes: 4, plusPipes: 0 },
     messages: [
       "Well done!",
       "We'll continue with the infrastructure. I couldn't find that much straight pipes this time, but I hope you can get use of these turn pipes as well!"
@@ -74,7 +74,7 @@ export const LEVELS: Level[] = [
   },
   // level 3
   {
-    startingBonus: { turnPipes: 16 },
+    startingBonus: { straightPipes: 0, turnPipes: 16, plusPipes: 0 },
     blockedFields: [
       '0000000000',
       '0000000010',
@@ -90,7 +90,7 @@ export const LEVELS: Level[] = [
   },
   // level 4
   {
-    startingBonus: { straightPipes: 8, turnPipes: 3 },
+    startingBonus: { straightPipes: 8, turnPipes: 3, plusPipes: 0 },
     grateMachines: [ {x: 6, y: 0} ],
     messages: [
       "OK, I've spent all of the money on pipes!",
@@ -100,7 +100,7 @@ export const LEVELS: Level[] = [
   },
   // level 5
   {
-    startingBonus: { straightPipes: 7, turnPipes: 3 },
+    startingBonus: { straightPipes: 7, turnPipes: 3, plusPipes: 0 },
     messages: [
       "You can also connect multiple grate machines with each other so you gain more points.",
       "Try it out!"
@@ -117,7 +117,7 @@ export const LEVELS: Level[] = [
   },
   // level 6
   {
-    startingBonus: { straightPipes: 6, turnPipes: 6 },
+    startingBonus: { straightPipes: 6, turnPipes: 6, plusPipes: 0 },
     messages: [],
     blockedFields: [
       '0000000100',
@@ -128,10 +128,10 @@ export const LEVELS: Level[] = [
     ],
     grateMachines: [ { x: 3, y: 1 }, { x: 6, y: 3} ],
     completed: defaultComplete
-  },  
+  },
   // level 7
   {
-    startingBonus: { straightPipes: 9, turnPipes: 6 },
+    startingBonus: { straightPipes: 9, turnPipes: 6, plusPipes: 0 },
     messages: [
       "OK, I think you've gotten the hang of it. I am leaving you in charge of connecting these grate machines.",
       "Try to connect all of them to make a very great grate machine.",
@@ -149,7 +149,7 @@ export const LEVELS: Level[] = [
   },
    // level 8
    {
-    startingBonus: { straightPipes: 10, turnPipes: 7 },
+    startingBonus: { straightPipes: 10, turnPipes: 7, plusPipes: 0 },
     messages: [],
     blockedFields: [
       '1000100000',
@@ -163,7 +163,7 @@ export const LEVELS: Level[] = [
   },
   // level 9
   {
-    startingBonus: { straightPipes: 14, plusPipes: 1, turnPipes: 2 },
+    startingBonus: { straightPipes: 14, turnPipes: 2, plusPipes: 1 },
     messages: [
       "Our supplier has given us a new kind of pipes! A plus pipe!",
       "These pipes can be used to achieve all kinds of new connections!",
@@ -174,8 +174,8 @@ export const LEVELS: Level[] = [
     completed: defaultComplete
   },
   // level 10
-  { 
-    startingBonus: { straightPipes: 7, turnPipes: 7 },
+  {
+    startingBonus: { straightPipes: 7, turnPipes: 7, plusPipes: 0 },
     messages: [
       "You are really good at connecting these pipes!",
       "Can you figure this one out?"
@@ -239,8 +239,8 @@ export const LEVELS: Level[] = [
     completed: defaultComplete
   },
   // game completed
-   {
-    startingBonus: { },
+  {
+    startingBonus: { straightPipes: 0, turnPipes: 0, plusPipes: 0 },
     messages: [
       "Seems like you have completed all of the levels!",
       "Props to you for completing the game, you did really well!!"
