@@ -68,6 +68,8 @@ export class BoardComponent {
 
   steamParts: SteamPart[] = [];
 
+  totalLevels: number = LEVELS.length;
+
   // Last mouse position
   private mouseBoardPos: { x: number, y: number };
 

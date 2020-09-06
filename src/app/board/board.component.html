@@ -5,6 +5,9 @@
 <div id="score-counter">
   <img src="./assets/game/grate.png">
   {{ score }}
+  <span style="margin-left: 20px">
+    {{ levelIndex + 1 }}/{{ totalLevels }}
+  </span>
 </div>
 
 <div class="board-outer"
@@ -37,3 +40,10 @@
 <ul class="messages" *ngIf="messages[levelIndex]">
   <li *ngFor="let message of messages[levelIndex]">{{ message }}</li>
 </ul>
+
+<div class="controls-menu">
+  <p>Use <b>mouse-click</b> or <b>1</b>, <b>2</b> or <b>3</b> to select tile from the inventory.</p>
+  <p>Use <b>mouse-wheel</b> or <b>Q</b>/<b>E</b> to rotate the tile.</p>
+  <p>Use <b>undo button</b> or <b>U</b> to undo a move.</p>
+  <p>Use <b>M</b> to toggle music play.</p>
+</div>
