@@ -26,6 +26,9 @@ export class MusicService {
   }
 
   public play(): void {
+    if(!this.music)
+      return;
+    this.music.volume = this.volume / 100;
     var promise = this.music.play();
     if (promise !== undefined) {
         promise.catch(error => {
