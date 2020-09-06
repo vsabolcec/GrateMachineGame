@@ -54,8 +54,13 @@ export class Board {
   private tiles: Array<Array<Tile | undefined>> = [];
   private stack: Stack = new Stack();
 
-  // TODO: temporary:
-  get shouldPlayEngine(): boolean { return false; }
+  /// engine playing...
+  private shouldPlayEngine_: boolean = false;
+  get shouldPlayEngine() {
+    const value = this.shouldPlayEngine_;
+    this.shouldPlayEngine_ = false;
+    return value;
+  }
 
   constructor() {
     for (let i = 0; i < FULL_BOARD_WIDTH; ++i) {
@@ -92,13 +97,13 @@ export class Board {
   placeTile(tile: Tile, x: number, y: number): boolean {
     if (this.get(x, y) !== undefined) return false;
     this.tiles[x][y] = deepCopy(tile);
-    // TODO: update helpers
     // if placed by user, update stack
     if (tile.type === TileType.PIPES) {
       const dir = calcTileDir(this.stack.top(), {x, y}, tile);
       this.stack.push({x, y});
       this.trackPath(x, y, dir);
     }
+    this.updateHelpers(this.tiles[x][y], x, y);
     return true;
   }
 
@@ -106,7 +111,7 @@ export class Board {
     if (this.get(x, y) === undefined) return;
     this.tiles[x][y] = undefined;
     this.stack.pop();
-    // TODO: update helpers
+    this.updateHelpers(this.tiles[x][y], x, y);
   }
 
   getTiles(fromX: number, toX: number): Array<{tile: Tile, x: number, y: number}> {
@@ -133,7 +138,7 @@ export class Board {
           if (otherTile !== undefined) continue;
           if (tile.layout[side] === 0) continue;
           // TODO: check plus tiles better (isOnStack method)
-          if (isPlusTile(tile) && this.get(x - DX[side], y - DY[side]) === undefined) continue;
+          if (isPlusTile(tile) && !this.isPlusOnPath(x, y, side)) continue;
           steam.push({x, y, side});
         }
       }
@@ -145,24 +150,6 @@ export class Board {
     return this.isOnStack(x1, y1) && this.isOnStack(x2, y2);
   }
 
-
-  /*
-  canPlaceTile()
-
-  placeTile()
-
-  removeTile()
-
-  getSteam()
-
-  getTiles()
-
-  isConnected();
-
-  get()
-
-  get shouldPlayEngine
-  */
 
 
   ///  the current tile is a pipe
@@ -205,8 +192,13 @@ export class Board {
     const tile = this.get(x, y);
     if (tile === undefined) return;
     if (tile.type === TileType.GRATE_MACHINE) {
-      // TODO: sound effect?
+      const maybePlus = this.findTrackPlus(x, y);
       this.stack.pushExtra({x, y});
+      this.updateHelpers(tile, x, y);
+      this.shouldPlayEngine_ = true;
+      if (maybePlus !== undefined) {
+        this.trackPath(maybePlus.x, maybePlus.y, maybePlus.side);
+      }
       return;
     }
     if (tile.type === TileType.STEAM_ENGINE) {
@@ -219,6 +211,35 @@ export class Board {
       return;
     }
   }
+
+  private updateHelpers(tile: Tile, x: number, y: number) {
+    for (let side = 0; side < 4; ++side) {
+      const otherTile = this.get(x + DX[side], y + DY[side]);
+      const otherSide = (side + 2) % 4;
+      if (this.isOnStack(x, y)) {
+        updateHelper(tile, otherTile, side, otherSide);
+      }
+      if (this.isOnStack(x + DX[side], y + DY[side])) {
+        updateHelper(otherTile, tile, otherSide, side);
+      }
+    }
+  }
+
+  private findTrackPlus(x: number, y: number): {x: number, y: number, side: number}|undefined {
+    const tile = this.get(x, y);
+    if (tile === undefined) return undefined;
+    if (this.isOnStack(x, y)) return undefined;  /// JAO JAO JAo
+    if (tile.type !== TileType.GRATE_MACHINE && tile.type !== TileType.STEAM_ENGINE) return undefined;
+    for (let side = 0; side < 4; ++side) {
+      const nx = x + DX[side];
+      const ny = y + DY[side];
+      const otherTile = this.get(nx, ny);
+      if (!isPlusTile(otherTile)) continue;
+      if (this.isPlusOnPath(nx, ny, side)) continue;
+      return {x: nx, y: nx, side};
+    }
+    return undefined;
+  }
 }
 
 
@@ -227,6 +248,7 @@ function positionOk(x: number, y: number): boolean {
 }
 
 function isPlusTile(tile: Tile): boolean {
+  if (tile === undefined) return false;
   if (tile.type !== TileType.PIPES) return false;
   return tile.layout[0] + tile.layout[1] + tile.layout[2] + tile.layout[3] === 4;
 }
@@ -257,4 +279,23 @@ function calcTileDir(posFrom: Pos, posTo: Pos, tile: Tile): number | undefined {
   }
   console.log('should nor REACH calcTileDir');
   return undefined;
+}
+
+function hasHelpers(tile: Tile): boolean {
+  if (tile === undefined) return false;
+  return tile.type === TileType.GRATE_MACHINE || tile.type === TileType.STEAM_ENGINE;
+}
+
+function updateHelper(tile1, tile2, side1, side2) {
+  if (!hasHelpers(tile1)) return;
+  if (tile1.helpers === undefined) tile1.helpers = [0, 0, 0, 0];
+  if (tile2 === undefined || tile2.type !== TileType.PIPES) {
+    tile1.helpers[side1] = 0;
+    return
+  }
+  if (tile2.layout[side2] === 0) {
+    tile1.helpers[side1] = 0;
+    return;
+  }
+  tile1.helpers[side1] = 1;
 }
