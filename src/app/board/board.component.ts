@@ -60,7 +60,7 @@ export class BoardComponent {
   boardStyle: {};
 
   // Board management
-  private board: Board;
+  private board: Board = new Board();
 
   placeholder?: Placeholder = undefined;
 
@@ -97,7 +97,6 @@ export class BoardComponent {
     // Ensure we work with numbers!
     this.width -= 0;
     this.height -= 0;
-    this.board = new Board(this.width, this.height);
     this.inventoryService.observer.subscribe((inventoryTile: InventoryTileType) => {
       if (inventoryTile === undefined) {
         this.placeholder = undefined;

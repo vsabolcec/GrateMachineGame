@@ -1,151 +1,139 @@
-import { Tile, TileType } from '../tile/tile.component';
+import { Tile, TileType, PipesTile } from '../tile/tile.component';
 import { deepCopy } from '../utils';
-import { Graph } from './graph';
 
-export class Board {
-  private tiles: Array<Array<Tile | undefined>> = [];
-  private modifiers: Array<Array<number>> = [];
-  private graph: Graph = new Graph();
+const FULL_BOARD_WIDTH = 1000;
+const BOARD_WIDTH = 10;
+const BOARD_HEIGHT = 5;
 
-  private stack: Array<{x: number, y: number}> = [{x: 0, y: 2}];
+const DX: number[] = [-1, 0, 1, 0];
+const DY: number[] = [0, -1, 0, 1];
+
+interface Pos {
+  x: number,
+  y: number
+};
+
+class Stack {
+  private stack: Array<Pos> = [];
   private history: Array<number> = [];
 
-  /// engine playing...
-  private shouldPlayEngine_: boolean = false;
-  get shouldPlayEngine() {
-    const value = this.shouldPlayEngine_;
-    this.shouldPlayEngine_ = false;
-    return value;
+  push(pos: Pos) {
+    // TODO: reconsider deep copy
+    this.stack.push(deepCopy(pos));
+    this.history.push(1);
   }
 
-  constructor(public width: number, public height: number) {
-    for (let i = 0; i < 100 * width; ++i) {
-      this.tiles.push(new Array(height));
-      this.modifiers.push(new Array(height));
-      for (let j = 0; j < height; ++j) {
-        this.tiles[i][j] = undefined;
-        this.modifiers[i][j] = 0;
-      }
-    }
+  pushExtra(pos: Pos) {
+    this.stack.push(deepCopy(pos));
+    this.history[this.history.length - 1]++;
   }
 
-  placeTile(tile: Tile, x: number, y: number): boolean {
-    if (this.tiles[x][y] !== undefined) return false;
-    // place tile
-    this.tiles[x][y] = deepCopy(tile);
-    // update connectivity
-    this.updateConnectivity(tile, x, y);
-    // update helpers (e.g. for steam engine and grate machine)
-    this.updateHelpers(this.tiles[x][y], x, y);
-
-    /// player je stavio
-    if (tile.type === TileType.PIPES) {
-      this.stack.push({x, y});
-      this.history.push(1);
-      this.checkStack();
+  pop() {
+    const count = this.history[this.history.length - 1];
+    for (let i = 0; i < count; ++i) {
+      this.stack.pop();
     }
-
-    return true;
+    this.history.pop();
   }
 
-  removeTile(x: number, y: number): void {
-    if (this.tiles[x][y] == undefined) return;
-    // place tile
-    this.tiles[x][y] = undefined;
-    // update connectivity
-    //this.updateConnectivity(tile, x, y);
-    // update helpers
-    this.updateHelpers(this.tiles[x][y], x, y);
-    this.removeHistory();
+  top(topIndex: number = 0): Pos {
+    return this.stack[this.stack.length - 1 - topIndex];
   }
 
-  canPlaceTile(tile: Tile, x: number, y: number): boolean {
-    if (this.tiles === undefined || this.tiles[x] === undefined)
-      return false;
-    if (this.tiles[x][y] !== undefined) return false;
-    const dx = [1, 0, -1, 0];
-    const dy = [0, 1, 0, -1];
-    const side = [2, 3, 0, 1];
-    // prvo ako bas stvarno ne mozemo nesto
-    for (let i = 0; i < 4; ++i) {
-      const otherTile = this.get(x + dx[i], y + dy[i]);
-      const otherSide = (side[i] + 2) % 4;
-      if (otherTile === undefined) continue;
-      if (tile.type === TileType.PIPES && tile.layout[side[i]] > 0 &&
-          otherTile.type === TileType.BLOCKED) {
-        return false;
-      }
-      if (tile.type === TileType.PIPES && tile.layout[side[i]] > 0 &&
-          otherTile.type === TileType.PIPES && otherTile.layout[otherSide] === 0) {
-        return false;
-      }
-      if (tile.type === TileType.PIPES && tile.layout[side[i]] > 0 &&
-          otherTile.type === TileType.PIPES && otherTile.layout[otherSide] === 0) {
-        return false;
-      }
-    }
-    const stackTop = this.stack[this.stack.length - 1];
-    if (Math.abs(stackTop.x - x) + Math.abs(stackTop.y - y) !== 1) return false;
-    const stackTopTile = this.get(stackTop.x, stackTop.y);
-    if (isPlusTile(stackTopTile)) {
-      const prevStackTop = this.stack[this.stack.length - 2];
-      if (x - stackTop.x !== stackTop.x - prevStackTop.x ||
-          y - stackTop.y !== stackTop.y - prevStackTop.y) {
-        return false;
-      }
-    }
-    for (let i = 0; i < 4; ++i) {
-      const otherTile = this.get(x + dx[i], y + dy[i]);
-      const otherSide = (side[i] + 2) % 4;
-      if (otherTile === undefined) continue;
-      if (hasPipe(otherTile, otherSide) && !hasPipe(tile, side[i])) {
-        return false;
-      }
-    }
-    for (let i = 0; i < 4; ++i) {
-      const otherTile = this.get(x + dx[i], y + dy[i]);
-      const otherSide = (side[i] + 2) % 4;
-      if (otherTile === undefined) continue;
-      if (hasPipe(tile, side[i]) && hasPipe(otherTile, otherSide)) {
+  contains(x: number, y: number): boolean {
+    // todo: better impl
+    for (let i = Math.max(0, this.stack.length - 50); i < this.stack.length; ++i) {
+      if (this.stack[i].x === x && this.stack[i].y === y)
         return true;
-      }
     }
     return false;
   }
+}
+
+export class Board {
+  private tiles: Array<Array<Tile | undefined>> = [];
+  private stack: Stack = new Stack();
+
+  // TODO: temporary:
+  get shouldPlayEngine(): boolean { return false; }
+
+  constructor() {
+    for (let i = 0; i < FULL_BOARD_WIDTH; ++i) {
+      this.tiles.push(new Array(BOARD_HEIGHT));
+      for (let j = 0; j < BOARD_HEIGHT; ++j) {
+        this.tiles[i][j] = undefined;
+      }
+    }
+    this.stack.push({x: 0, y: 2});
+  }
 
   get(x: number, y: number): Tile | undefined {
-    if (this.tiles === undefined || this.tiles[x] === undefined) {
-      return undefined;
-    }
+    if (!positionOk(x, y)) return undefined;
     return this.tiles[x][y];
+  }
+
+  canPlaceTile(tile: Tile, x: number, y: number): boolean {
+    if (this.get(x, y) !== undefined) return false;
+    if (tile.type !== TileType.PIPES) return false;
+    if (isPlusTile(tile) && x % 9 === 0) return false;
+    const stackTop = this.stack.top();
+    if (!canContinuePath(stackTop, {x, y})) return false;
+    if (!this.pipesEndsMatch(tile, x, y)) return false;
+    const toStackSide = getDirection({x, y}, stackTop);
+    if (tile.layout[toStackSide] === 0) return false;  // moram nastavljati stack
+    const stackTile = this.get(stackTop.x, stackTop.y);
+    if (isPlusTile(stackTile) &&
+        !this.isPlusOnPath(stackTop.x, stackTop.y, toStackSide)) {
+      return false;
+    }
+    return true;
+  }
+
+  placeTile(tile: Tile, x: number, y: number): boolean {
+    if (this.get(x, y) !== undefined) return false;
+    this.tiles[x][y] = deepCopy(tile);
+    // TODO: update helpers
+    // if placed by user, update stack
+    if (tile.type === TileType.PIPES) {
+      const dir = calcTileDir(this.stack.top(), {x, y}, tile);
+      this.stack.push({x, y});
+      this.trackPath(x, y, dir);
+    }
+    return true;
+  }
+
+  removeTile(x: number, y: number) {
+    if (this.get(x, y) === undefined) return;
+    this.tiles[x][y] = undefined;
+    this.stack.pop();
+    // TODO: update helpers
   }
 
   getTiles(fromX: number, toX: number): Array<{tile: Tile, x: number, y: number}> {
     const tiles = [];
     for (let i = fromX; i < toX; ++i) {
-      for (let j = 0; j < this.height; ++j) {
+      for (let j = 0; j < BOARD_HEIGHT; ++j) {
         const tile = this.get(i, j);
         if (tile === undefined) continue;
         tiles.push({tile, x: i, y: j});
       }
     }
+    console.log(tiles);
     return tiles;
   }
 
   getSteam(fromX: number, toX: number): Array<{x: number, y: number, side: number}> {
     const steam = [];
-    const dx = [-1, 0, 1, 0];
-    const dy = [0, -1, 0, 1];
     for (let x = fromX; x < toX; ++x) {
-      for (let y = 0; y < this.height; ++y) {
+      for (let y = 0; y < BOARD_HEIGHT; ++y) {
         const tile = this.get(x, y);
-        if (tile === undefined || tile.type != TileType.PIPES) continue;
+        if (tile === undefined || tile.type !== TileType.PIPES) continue;
         for (let side = 0; side < 4; ++side) {
-          const otherTile = this.get(x + dx[side], y + dy[side]);
-          const otherSide = (side + 2) % 4;
+          const otherTile = this.get(x + DX[side], y + DY[side]);
           if (otherTile !== undefined) continue;
           if (tile.layout[side] === 0) continue;
-          if (isPlusTile(tile) && this.get(x - dx[side], y - dy[side]) === undefined) continue;
+          // TODO: check plus tiles better (isOnStack method)
+          if (isPlusTile(tile) && this.get(x - DX[side], y - DY[side]) === undefined) continue;
           steam.push({x, y, side});
         }
       }
@@ -154,128 +142,119 @@ export class Board {
   }
 
   isConnected(x1: number, y1: number, x2: number, y2: number): boolean {
-    return this.isOnPath(x1, y1) && this.isOnPath(x2, y2);
+    return this.isOnStack(x1, y1) && this.isOnStack(x2, y2);
   }
 
-  countConnections(x: number, y: number): number {
-    const dx = [1, 0, -1, 0];
-    const dy = [0, 1, 0, -1];
-    const side = [2, 3, 0, 1];
-    const tile = this.get(x, y);
-    if (tile === undefined) return 0;
-    let count: number = 0;
-    for (let i = 0; i < 4; ++i) {
-      const otherTile = this.get(x + dx[i], y + dy[i]);
-      if (otherTile === undefined) continue;
-      if (hasPipe(tile, side[i]) && hasPipe(otherTile, (side[i] + 2) % 4)) {
-        count++;
-      }
-    }
-    return count;
-  }
 
-  private updateConnectivity(tile: Tile, x: number, y: number) {
-    if (tile.type === TileType.PIPES) {
-      if (tile.layout[0] === 1 && tile.layout[2] === 1) {
-        this.graph.join({x, y, side: 0}, {x, y, side: 2});
-      }
-      if (tile.layout[1] === 1 && tile.layout[3] === 1) {
-        this.graph.join({x, y, side: 1}, {x, y, side: 3});
-      }
-    }
-  }
+  /*
+  canPlaceTile()
 
-  private updateHelpers(tile: Tile, x: number, y: number) {
-    const dx = [1, 0, -1, 0];
-    const dy = [0, 1, 0, -1];
-    const side = [2, 3, 0, 1];
-    for (let i = 0; i < 4; ++i) {
-      const otherTile = this.get(x + dx[i], y + dy[i]);
-      const otherSide = (side[i] + 2) % 4;
-      const before = checkMachineTile(otherTile);
-      checkHelpers(tile, otherTile, side[i], otherSide);
-      checkHelpers(otherTile, tile, otherSide, side[i]);
-      const after = checkMachineTile(otherTile);
-      if (after !== undefined && before !== undefined && before === 0 && after > 0) {
-        this.shouldPlayEngine_ = true;
-      }
-    }
-  }
+  placeTile()
 
-  private checkStack() {
-    const stackTop = this.stack[this.stack.length - 1];
-    const prevStackTop = this.stack[this.stack.length - 2];
-    const dx = [-1, 0, 1, 0];
-    const dy = [0, -1, 0, 1];
+  removeTile()
+
+  getSteam()
+
+  getTiles()
+
+  isConnected();
+
+  get()
+
+  get shouldPlayEngine
+  */
+
+
+  ///  the current tile is a pipe
+  private pipesEndsMatch(tile: PipesTile, x: number, y: number): boolean {
     for (let side = 0; side < 4; ++side) {
-      const nx = stackTop.x + dx[side];
-      const ny = stackTop.y + dy[side];
-      if (nx === prevStackTop.x && ny === prevStackTop.y) continue;
-      const otherTile = this.get(nx, ny);
+      const otherTile = this.get(x + DX[side], y + DY[side]);
+      const otherSide = (side + 2) % 4;
       if (otherTile === undefined) continue;
-      if (otherTile.type === TileType.GRATE_MACHINE || otherTile.type === TileType.STEAM_ENGINE ||
-          isPlusTile(otherTile)) {
-        this.stack.push({x: nx, y: ny});
-        this.history[this.history.length - 1]++;
+      if (otherTile.type === TileType.BLOCKED && tile.layout[side] > 0) {
+        return false;
+      }
+      if (otherTile.type === TileType.PIPES && tile.layout[side] === 0 &&
+          otherTile.layout[otherSide] > 0) {
+        return false;
+      }
+      if (otherTile.type === TileType.PIPES && tile.layout[side] > 0 &&
+          otherTile.layout[otherSide] === 0) {
+        return false;
       }
     }
+    return true;
   }
 
-  private removeHistory() {
-    if (this.history.length === 0) return;
-    const times = this.history[this.history.length - 1];
-    for (let i = 0; i < times; ++i) {
-      this.stack.pop();
+  // za plus tile, nalazi li se dio na pathu?
+  private isPlusOnPath(x: number, y: number, side: number): boolean {
+    const onStack1 = this.isOnStack(x + DX[side], y + DY[side]);
+    const onStack2 = this.isOnStack(x - DX[side], y - DY[side]);
+    return onStack1 || onStack2;
+
+  }
+
+  private isOnStack(x: number, y: number): boolean {
+    return this.get(x, y) !== undefined  && this.stack.contains(x, y);
+  }
+
+  private trackPath(x: number, y: number, dir: number) {
+    console.log(x, y, dir);
+    x += DX[dir];
+    y += DY[dir];
+    const tile = this.get(x, y);
+    if (tile === undefined) return;
+    if (tile.type === TileType.GRATE_MACHINE) {
+      // TODO: sound effect?
+      this.stack.pushExtra({x, y});
+      return;
     }
-    this.history.pop();
-  }
-
-  private isOnPath(x: number, y: number): boolean {
-    let counter = 0;
-    for (let i = this.stack.length - 1; i >= 0; --i) {
-      if (counter++ > 80) return false;
-      if (this.stack[i].x === x && this.stack[i].y === y)
-        return true;
+    if (tile.type === TileType.STEAM_ENGINE) {
+      this.stack.pushExtra({x, y});
+      return;
     }
-    return false;
+    if (tile.type === TileType.PIPES && isPlusTile(tile)) {
+      this.stack.pushExtra({x, y});
+      this.trackPath(x, y, dir);
+      return;
+    }
   }
 }
 
-function hasPipe(tile: Tile, side: number): boolean {
-  if (tile === undefined) return false;
-  if (tile.type === TileType.BLOCKED) return false;
-  if (tile.type !== TileType.PIPES) return true;
-  return tile.layout[side] > 0;
-}
 
-function checkHelpers(tile1, tile2, side1, side2) {
-  if (!hasHelpers(tile1)) return;
-  if (tile1.helpers === undefined) tile1.helpers = [0, 0, 0, 0];
-  if (tile2 === undefined || tile2.type !== TileType.PIPES) {
-    tile1.helpers[side1] = 0;
-    return
-  }
-  if (tile2.layout[side2] === 0) {
-    tile1.helpers[side1] = 0;
-    return;
-  }
-  tile1.helpers[side1] = 1;
-}
-
-function hasHelpers(tile: Tile): boolean {
-  if (tile === undefined) return false;
-  return tile.type === TileType.GRATE_MACHINE || tile.type === TileType.STEAM_ENGINE;
-}
-
-function checkMachineTile(tile: Tile): number | undefined {
-  if (tile === undefined || tile.type !== TileType.GRATE_MACHINE) return undefined;
-  if (tile.helpers === undefined) return 0;
-  let sum = 0;
-  for (const value of tile.helpers) sum += value;
-  return sum;
+function positionOk(x: number, y: number): boolean {
+  return x >= 0 && y >= 0 && x < FULL_BOARD_WIDTH && y < BOARD_HEIGHT;
 }
 
 function isPlusTile(tile: Tile): boolean {
   if (tile.type !== TileType.PIPES) return false;
   return tile.layout[0] + tile.layout[1] + tile.layout[2] + tile.layout[3] === 4;
+}
+
+function canContinuePath(posFrom: Pos, posTo: Pos): boolean {
+  return Math.abs(posFrom.x - posTo.x) + Math.abs(posFrom.y - posTo.y) === 1;
+}
+
+function getDirection(posFrom: Pos, posTo: Pos): number {
+  if (posFrom.x - 1 === posTo.x) return 0;
+  if (posFrom.x + 1 === posTo.x) return 2;
+  if (posFrom.y - 1 === posTo.y) return 1;
+  if (posFrom.y + 1 === posTo.y) return 3;
+  console.log('[board] getDirection: should NOT reach!');
+  return -1;
+}
+
+function calcTileDir(posFrom: Pos, posTo: Pos, tile: Tile): number | undefined {
+  if (tile.type !== TileType.PIPES) return undefined;
+  // prvo probaj ravne
+  const dirFrom = getDirection(posFrom, posTo);
+  if (tile.layout[dirFrom] > 0) return dirFrom;
+  // onda probaj zakrivljene
+  for (let i = 0; i < 4; ++i) {
+    if (i != (dirFrom + 2) % 4 && tile.layout[i] > 0) {
+      return i;
+    }
+  }
+  console.log('should nor REACH calcTileDir');
+  return undefined;
 }
