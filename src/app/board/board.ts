@@ -1,4 +1,4 @@
-import { Tile, TileType, PipesTile } from '../tile/tile.component';
+import { Tile, TileType, PipesTile, GrateMachineTile, SteamEngineTile } from '../tile/tile.component';
 import { deepCopy } from '../utils';
 
 const FULL_BOARD_WIDTH = 1000;
@@ -28,12 +28,14 @@ class Stack {
     this.history[this.history.length - 1]++;
   }
 
-  pop() {
+  pop(): Array<Pos> {
     const count = this.history[this.history.length - 1];
+    const ret = [];
     for (let i = 0; i < count; ++i) {
-      this.stack.pop();
+      ret.push(this.stack.pop());
     }
     this.history.pop();
+    return ret;
   }
 
   top(topIndex: number = 0): Pos {
@@ -103,15 +105,20 @@ export class Board {
       this.stack.push({x, y});
       this.trackPath(x, y, dir);
     }
-    this.updateHelpers(this.tiles[x][y], x, y);
+    this.updateHelpersArea(x, y);
     return true;
   }
 
   removeTile(x: number, y: number) {
     if (this.get(x, y) === undefined) return;
     this.tiles[x][y] = undefined;
-    this.stack.pop();
-    this.updateHelpers(this.tiles[x][y], x, y);
+    const ret = this.stack.pop();
+    this.updateHelpersArea(x, y);
+    for (const pos of ret) {
+      console.log('onstack', pos, this.isOnStack(pos.x, pos.y));
+      this.updateHelpersArea(pos.x, pos.y);
+    }
+    console.log(ret);
   }
 
   getTiles(fromX: number, toX: number): Array<{tile: Tile, x: number, y: number}> {
@@ -182,7 +189,7 @@ export class Board {
   }
 
   private isOnStack(x: number, y: number): boolean {
-    return this.get(x, y) !== undefined  && this.stack.contains(x, y);
+    return this.get(x, y) !== undefined && this.stack.contains(x, y);
   }
 
   private trackPath(x: number, y: number, dir: number) {
@@ -194,7 +201,7 @@ export class Board {
     if (tile.type === TileType.GRATE_MACHINE) {
       const maybePlus = this.findTrackPlus(x, y);
       this.stack.pushExtra({x, y});
-      this.updateHelpers(tile, x, y);
+      this.updateHelpersArea(x, y);
       this.shouldPlayEngine_ = true;
       if (maybePlus !== undefined) {
         this.trackPath(maybePlus.x, maybePlus.y, maybePlus.side);
@@ -212,18 +219,39 @@ export class Board {
     }
   }
 
-  private updateHelpers(tile: Tile, x: number, y: number) {
-    for (let side = 0; side < 4; ++side) {
-      const otherTile = this.get(x + DX[side], y + DY[side]);
-      const otherSide = (side + 2) % 4;
-      if (this.isOnStack(x, y)) {
-        updateHelper(tile, otherTile, side, otherSide);
-      }
-      if (this.isOnStack(x + DX[side], y + DY[side])) {
-        updateHelper(otherTile, tile, otherSide, side);
+  private updateHelpersArea(x: number, y: number) {
+    for (let dx = -1; dx <= 1; ++dx) {
+      for (let dy = -1; dy <= 1; ++dy) {
+        const tile = this.get(x + dx, y + dy);
+        if (tile === undefined) continue;
+        if (tile.type === TileType.GRATE_MACHINE || tile.type === TileType.STEAM_ENGINE) {
+          this.updateHelpersInternal(tile, x + dx, y + dy);
+        }
       }
     }
   }
+
+  private updateHelpersInternal(tile: GrateMachineTile | SteamEngineTile, x: number, y: number) {
+    if (tile.helpers === undefined) tile.helpers = [0, 0, 0, 0];
+    if (!this.isOnStack(x, y)) {
+      tile.helpers = [0, 0, 0, 0];
+      return;
+    }
+    for (let side = 0; side < 4; ++side) {
+      const otherTile = this.get(x + DX[side], y + DY[side]);
+      const otherSide = (side + 2) % 4;
+      if (otherTile === undefined || otherTile.type !== TileType.PIPES) {
+        tile.helpers[side] = 0;
+        continue;
+      }
+      if (otherTile.layout[otherSide] === 0) {
+        tile.helpers[side] = 0;
+      } else {
+        tile.helpers[side] = 1;
+      }
+    }
+  }
+
 
   private findTrackPlus(x: number, y: number): {x: number, y: number, side: number}|undefined {
     const tile = this.get(x, y);
@@ -279,23 +307,4 @@ function calcTileDir(posFrom: Pos, posTo: Pos, tile: Tile): number | undefined {
   }
   console.log('should nor REACH calcTileDir');
   return undefined;
-}
-
-function hasHelpers(tile: Tile): boolean {
-  if (tile === undefined) return false;
-  return tile.type === TileType.GRATE_MACHINE || tile.type === TileType.STEAM_ENGINE;
-}
-
-function updateHelper(tile1, tile2, side1, side2) {
-  if (!hasHelpers(tile1)) return;
-  if (tile1.helpers === undefined) tile1.helpers = [0, 0, 0, 0];
-  if (tile2 === undefined || tile2.type !== TileType.PIPES) {
-    tile1.helpers[side1] = 0;
-    return
-  }
-  if (tile2.layout[side2] === 0) {
-    tile1.helpers[side1] = 0;
-    return;
-  }
-  tile1.helpers[side1] = 1;
 }
