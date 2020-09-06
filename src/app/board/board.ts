@@ -115,10 +115,8 @@ export class Board {
     const ret = this.stack.pop();
     this.updateHelpersArea(x, y);
     for (const pos of ret) {
-      console.log('onstack', pos, this.isOnStack(pos.x, pos.y));
       this.updateHelpersArea(pos.x, pos.y);
     }
-    console.log(ret);
   }
 
   getTiles(fromX: number, toX: number): Array<{tile: Tile, x: number, y: number}> {
@@ -130,7 +128,6 @@ export class Board {
         tiles.push({tile, x: i, y: j});
       }
     }
-    console.log(tiles);
     return tiles;
   }
 
@@ -193,7 +190,6 @@ export class Board {
   }
 
   private trackPath(x: number, y: number, dir: number) {
-    console.log(x, y, dir);
     x += DX[dir];
     y += DY[dir];
     const tile = this.get(x, y);
