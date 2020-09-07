@@ -154,6 +154,9 @@ export class Board {
     return this.isOnStack(x1, y1) && this.isOnStack(x2, y2);
   }
 
+  getStack(): Stack {
+    return this.stack;
+  }
 
 
   ///  the current tile is a pipe
@@ -200,7 +203,7 @@ export class Board {
       this.updateHelpersArea(x, y);
       this.shouldPlayEngine_ = true;
       if (maybePlus !== undefined) {
-        this.trackPath(maybePlus.x, maybePlus.y, maybePlus.side);
+        this.trackPath(x, y, maybePlus.side);
       }
       return;
     }

@@ -42,6 +42,8 @@ const defaultComplete =
   if (!context.board.isOnStack(context.toX, MIDDLE_HEIGHT)) {
     return false;
   }
+  const stackTop = context.board.getStack().top();
+  if (stackTop.x !== context.toX || stackTop.y !== MIDDLE_HEIGHT) return false;
   if (context.level.grateMachines !== undefined) {
     for (const machine of context.level.grateMachines) {
       if (!context.board.isOnStack(context.fromX + machine.x, machine.y)) {
@@ -152,7 +154,7 @@ export const LEVELS: Level[] = [
   },
    // level 8
    {
-    startingBonus: { straightPipes: 10, turnPipes: 7, plusPipes: 0 },
+    startingBonus: { straightPipes: 8, turnPipes: 7, plusPipes: 0 },
     messages: [],
     blockedFields: [
       '1000100000',
@@ -231,11 +233,11 @@ export const LEVELS: Level[] = [
     startingBonus: { straightPipes: 10, turnPipes: 4, plusPipes: 1 },
     messages: [],
     blockedFields: [
-      '0000000000',
+      '1000000000',
       '0000010000',
       '0000000000',
       '0011100000',
-      '0000000000'
+      '1000000000'
     ],
     grateMachines: [ { x: 1, y: 0 }, { x: 5, y: 4 } ],
     completed: defaultComplete
