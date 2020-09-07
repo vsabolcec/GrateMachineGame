@@ -4,18 +4,11 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class SoundService {
-  private volume_: number;
+  private volume_: number = 100;
   //private soundMap_: Map<string, HTMLAudioElement> = new Map();
   private soundMap_: Map<string, string> = new Map();
 
-  constructor() {
-    const volume_from_settings = localStorage.getItem("sound_volume");
-    if(volume_from_settings) {
-      this.volume = +volume_from_settings;
-    } else {
-      this.volume = 100;
-    }
-  }
+  constructor() {}
 
 
   public set(key: string, value: HTMLAudioElement) {
@@ -43,7 +36,6 @@ export class SoundService {
   }
 
   public set volume(newVolume: number) {
-    localStorage.setItem("sound_volume", newVolume.toString());
     this.volume_ = newVolume;
   }
 

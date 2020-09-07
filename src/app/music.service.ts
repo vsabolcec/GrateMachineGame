@@ -4,24 +4,11 @@ import { HostListener, Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class MusicService {
-  private volume_: number;
+  private volume_: number = 100;
   private music_: HTMLAudioElement;
-  private muted_: boolean;
+  private muted_: boolean = false;
 
-  constructor() {
-    const muted_from_settings = localStorage.getItem("music_muted");
-    const volume_from_settings = localStorage.getItem("music_volume");
-    if(volume_from_settings) {
-      this.volume = +volume_from_settings;
-    } else {
-      this.volume = 100;
-    }
-    if (muted_from_settings == "yes") {
-      this.muted_ = true;
-    } else {
-      this.muted_ = false;
-    }
-  }
+  constructor() {}
 
   public get music(): HTMLAudioElement {
     return this.music_;
@@ -52,7 +39,6 @@ export class MusicService {
   }
 
   public set volume(newVolume: number) {
-    localStorage.setItem("music_volume", newVolume.toString());
     this.volume_ = newVolume;
     if(this.music)
       this.music.volume = this.volume / 100;
@@ -69,10 +55,8 @@ export class MusicService {
     this.muted_ = !this.muted_;
     if (this.muted_) {
       this.music.pause();
-      localStorage.setItem("music_muted", "yes");
     } else {
       this.music.play();
-      localStorage.setItem("music_muted", "no");
     }
   }
 }
